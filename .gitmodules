@@ -1,3 +1,9 @@
 [submodule "reference/leptonica"]
 	path = reference/leptonica
 	url = https://github.com/DanBloomberg/leptonica.git
+[submodule "reference/leptonica-rs"]
+	path = reference/leptonica-rs
+	url = https://github.com/tagawa0525/leptonica-rs.git
+[submodule "reference/jbig2enc"]
+	path = reference/jbig2enc
+	url = https://github.com/agl/jbig2enc.git
