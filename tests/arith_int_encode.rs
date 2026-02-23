@@ -6,7 +6,7 @@ use jbig2enc_rs::arith::{ArithEncoder, IntProc};
 
 /// encode_int が値を符号化してビット列を出力できることを確認。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_produces_output() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, 0);
@@ -17,7 +17,7 @@ fn encode_int_produces_output() {
 /// range 0 (0..=3): data=0, bits=2, delta=0, intbits=2
 /// value=0 → prefix=0b00(2bits), value_bits=0b00(2bits)
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range0_value0() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, 0);
@@ -33,7 +33,7 @@ fn encode_int_range0_value0() {
 
 /// range 0 (0..=3): value=3 と value=0 は異なる出力になる
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range0_different_values() {
     let mut enc0 = ArithEncoder::new();
     enc0.encode_int(IntProc::Dh, 0);
@@ -48,7 +48,7 @@ fn encode_int_range0_different_values() {
 
 /// range 1 (-1): data=9(=0b1001), bits=4, delta=0, intbits=0
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range1_minus1() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, -1);
@@ -58,7 +58,7 @@ fn encode_int_range1_minus1() {
 
 /// range 2 (-3..-2): data=5, bits=3, delta=2, intbits=1
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range2_minus2() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, -2);
@@ -68,7 +68,7 @@ fn encode_int_range2_minus2() {
 
 /// range 2 (-3..-2): value=-2 と value=-3 は異なる出力
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range2_minus2_vs_minus3() {
     let mut enc2 = ArithEncoder::new();
     enc2.encode_int(IntProc::Dh, -2);
@@ -83,7 +83,7 @@ fn encode_int_range2_minus2_vs_minus3() {
 
 /// range 3 (4..=19): data=2, bits=3, delta=4, intbits=4
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_range3_value4() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, 4);
@@ -93,7 +93,7 @@ fn encode_int_range3_value4() {
 
 /// range 11 (4436..=2000000000): 最大値
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_max_value() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, 2_000_000_000);
@@ -103,7 +103,7 @@ fn encode_int_max_value() {
 
 /// range 12 (-2000000000..=-4436): 最小値
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_min_value() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Dh, -2_000_000_000);
@@ -113,7 +113,7 @@ fn encode_int_min_value() {
 
 /// 異なるプロシージャは独立したコンテキストを使う（同じ値でも出力が異なる可能性）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_different_procs_independent() {
     let mut enc_dh = ArithEncoder::new();
     enc_dh.encode_int(IntProc::Dh, 5);
@@ -132,7 +132,7 @@ fn encode_int_different_procs_independent() {
 
 /// 複数の整数を順に符号化できることを確認
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_int_multiple_values() {
     let mut enc = ArithEncoder::new();
     for v in [0, 1, 2, 3, -1, 4, 19, -4, -19, 20, 83, -20, -83] {
@@ -148,7 +148,7 @@ fn encode_int_multiple_values() {
 
 /// encode_oob が出力を生成することを確認
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_oob_produces_output() {
     let mut enc = ArithEncoder::new();
     enc.encode_oob(IntProc::Fs);
@@ -159,7 +159,7 @@ fn encode_oob_produces_output() {
 /// encode_oob は encode_int と独立したコンテキストを共有する
 /// （同じプロシージャを使い、連続符号化ができることを確認）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_oob_and_int_interleaved() {
     let mut enc = ArithEncoder::new();
     enc.encode_int(IntProc::Fs, 0);
@@ -171,7 +171,7 @@ fn encode_oob_and_int_interleaved() {
 
 /// 2回OOBを符号化すると出力長が変わる
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_oob_twice_different_output() {
     let mut enc1 = ArithEncoder::new();
     enc1.encode_oob(IntProc::Fs);
@@ -195,7 +195,7 @@ fn encode_oob_twice_different_output() {
 
 /// encode_iaid が出力を生成することを確認
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_iaid_produces_output() {
     let mut enc = ArithEncoder::new();
     enc.encode_iaid(4, 0); // 4ビット、値0
@@ -205,7 +205,7 @@ fn encode_iaid_produces_output() {
 
 /// encode_iaid: 同じsymcodelensの値0と1は異なる出力
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_iaid_different_values() {
     let mut enc0 = ArithEncoder::new();
     enc0.encode_iaid(4, 0);
@@ -220,7 +220,7 @@ fn encode_iaid_different_values() {
 
 /// encode_iaid: symcodelen=0 は何も符号化しない（ループが0回）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_iaid_zero_codelen() {
     let mut enc = ArithEncoder::new();
     enc.encode_iaid(0, 0);
@@ -233,7 +233,7 @@ fn encode_iaid_zero_codelen() {
 
 /// encode_iaid: 同じ値を2回符号化すると2回目はコンテキストが変化するため異なる出力になる可能性
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_iaid_repeated() {
     let mut enc = ArithEncoder::new();
     enc.encode_iaid(4, 5);
@@ -244,7 +244,7 @@ fn encode_iaid_repeated() {
 
 /// encode_iaid: symcodelen=8, 最大値 255
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encode_iaid_max_value_8bit() {
     let mut enc = ArithEncoder::new();
     enc.encode_iaid(8, 255);

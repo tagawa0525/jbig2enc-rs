@@ -200,8 +200,10 @@ impl ArithEncoder {
             prev = update_prev(prev, v as u32);
         }
 
-        // 値ビットをMSBファーストで符号化
-        encoded_value <<= 32 - range.intbits;
+        // 値ビットをMSBファーストで符号化（intbits=0の場合はスキップ）
+        if range.intbits > 0 {
+            encoded_value <<= 32 - range.intbits;
+        }
         for _ in 0..range.intbits {
             let v = ((encoded_value & 0x8000_0000) >> 31) as u8;
             let ctx = &mut self.intctx[ctx_start..ctx_start + INT_CTX_SIZE];
@@ -251,6 +253,9 @@ impl ArithEncoder {
     /// C++版 `jbig2enc_iaid()` に対応。
     /// `iaidctx` は `1 << symcodelen` バイトのコンテキスト配列。
     pub fn encode_iaid(&mut self, symcodelen: u32, value: u32) {
+        if symcodelen == 0 {
+            return;
+        }
         self.ensure_iaid_ctx(symcodelen);
 
         let mask = (1u32 << (symcodelen + 1)) - 1;
