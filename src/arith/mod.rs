@@ -1,4 +1,5 @@
 mod encoder;
+mod image;
 mod int_encode;
 mod state_table;
 
