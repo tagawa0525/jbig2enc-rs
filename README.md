@@ -54,7 +54,7 @@ git submodule update --init --recursive
 
 - `CLAUDE.md` — Development conventions and process rules
 - `docs/plans/` — Implementation plans for each feature
-- `reference/leptonica-rs/docs/porting/jbig2enc-api-compatibility.md` — leptonica-rs API compatibility notes
+- [leptonica-rs API compatibility notes](https://github.com/tagawa0525/leptonica-rs/blob/main/docs/porting/jbig2enc-api-compatibility.md) — leptonica-rs API compatibility notes (also available locally at `reference/leptonica-rs/docs/porting/jbig2enc-api-compatibility.md` after `git submodule update --init --recursive`)
 
 ## License
 
