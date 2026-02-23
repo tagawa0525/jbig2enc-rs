@@ -7,13 +7,13 @@ use jbig2enc_rs::arith::{ArithEncoder, STATE_TABLE};
 /// C++版 ctbl[] の全92エントリとRust版 STATE_TABLE を照合する。
 /// C++のマクロ展開を手動で計算した期待値。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_has_92_entries() {
     assert_eq!(STATE_TABLE.len(), 92);
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_first_entry_mps0() {
     // State 0 (MPS=0): qe=0x5601, mps=1, lps=1+46=47 (SWITCH)
     let e = STATE_TABLE[0];
@@ -23,7 +23,7 @@ fn state_table_first_entry_mps0() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_entry_5_mps0() {
     // State 5 (MPS=0): qe=0x0221, mps=38, lps=33
     let e = STATE_TABLE[5];
@@ -33,7 +33,7 @@ fn state_table_entry_5_mps0() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_entry_6_mps0() {
     // State 6 (MPS=0): qe=0x5601, mps=7, lps=6+46=52 (SWITCH)
     let e = STATE_TABLE[6];
@@ -43,7 +43,7 @@ fn state_table_entry_6_mps0() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_entry_45_mps0() {
     // State 45 (MPS=0): qe=0x0001, mps=45, lps=43
     let e = STATE_TABLE[45];
@@ -53,7 +53,7 @@ fn state_table_entry_45_mps0() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_first_entry_mps1() {
     // State 46 (MPS=1): qe=0x5601, mps=47, lps=47-46=1 (SWITCH)
     let e = STATE_TABLE[46];
@@ -63,7 +63,7 @@ fn state_table_first_entry_mps1() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_entry_51_mps1() {
     // State 51 (= 5+46, MPS=1): qe=0x0221, mps=84, lps=79
     let e = STATE_TABLE[51];
@@ -73,7 +73,7 @@ fn state_table_entry_51_mps1() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_entry_91_mps1() {
     // State 91 (= 45+46, MPS=1): qe=0x0001, mps=91, lps=89
     let e = STATE_TABLE[91];
@@ -83,7 +83,7 @@ fn state_table_entry_91_mps1() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn state_table_symmetry() {
     // MPS=0側とMPS=1側はqe値が一致するはず
     for i in 0..46 {
@@ -100,7 +100,7 @@ fn state_table_symmetry() {
 // ========================================================================
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_new_initial_state() {
     let enc = ArithEncoder::new();
     // 初期状態: a=0x8000, c=0, ct=12, bp=-1
@@ -109,7 +109,7 @@ fn encoder_new_initial_state() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_reset_clears_state() {
     let mut enc = ArithEncoder::new();
     // ビットを符号化して状態を変更
@@ -123,7 +123,7 @@ fn encoder_reset_clears_state() {
 }
 
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_flush_clears_output() {
     let mut enc = ArithEncoder::new();
     let mut ctx = vec![0u8; 1];
@@ -138,7 +138,7 @@ fn encoder_flush_clears_output() {
 /// C++版の `input[]` 配列を使って画像データを符号化し、
 /// 期待される出力バイト列と比較する。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_h2_test_vector() {
     // H.2テスト入力: 32バイト = 256ビットを1行の画像として符号化
     let input: [u8; 32] = [
@@ -173,7 +173,7 @@ fn encoder_h2_test_vector() {
 
 /// encode_bit で全0ビット列を符号化した場合の動作確認。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_all_zeros() {
     let mut enc = ArithEncoder::new();
     let mut ctx = vec![0u8; 1];
@@ -187,7 +187,7 @@ fn encoder_all_zeros() {
 
 /// encode_bit で全1ビット列を符号化した場合の動作確認。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_all_ones() {
     let mut enc = ArithEncoder::new();
     let mut ctx = vec![0u8; 1];
@@ -201,7 +201,7 @@ fn encoder_all_ones() {
 
 /// encode_final が適切な終端マーカー（0xFF 0xAC）を出力することを確認。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_final_marker() {
     let mut enc = ArithEncoder::new();
     let mut ctx = vec![0u8; 1];
@@ -217,7 +217,7 @@ fn encoder_final_marker() {
 
 /// to_vec が data_size と同じ長さのベクタを返すことを確認。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn encoder_to_vec_size_matches_data_size() {
     let mut enc = ArithEncoder::new();
     let mut ctx = vec![0u8; 1];
