@@ -6,7 +6,7 @@ use jbig2enc_rs::arith::ArithEncoder;
 
 /// 1x1画像（白ピクセル=0）の符号化
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_1x1_white() {
     let mut enc = ArithEncoder::new();
     let data = [0u32; 1]; // 1ピクセル幅、1行、ゼロビット=白
@@ -17,7 +17,7 @@ fn bitimage_1x1_white() {
 
 /// 1x1画像（黒ピクセル=1）の符号化
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_1x1_black() {
     let mut enc = ArithEncoder::new();
     // MSBファーストの1bpp: 最初のビット（MSB）が1 = 0x80000000
@@ -29,7 +29,7 @@ fn bitimage_1x1_black() {
 
 /// 白ピクセルと黒ピクセルは異なる出力を生成する
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_1x1_white_vs_black() {
     let mut enc_white = ArithEncoder::new();
     enc_white.encode_bitimage(&[0u32], 1, 1, false);
@@ -44,7 +44,7 @@ fn bitimage_1x1_white_vs_black() {
 
 /// 8x1画像（幅が32の倍数でない場合）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_8x1_partial_word() {
     let mut enc = ArithEncoder::new();
     // 幅8ピクセル = 1ワード。パターン: 0b10101010... = 0xAA000000
@@ -56,7 +56,7 @@ fn bitimage_8x1_partial_word() {
 
 /// 32x1画像（幅がちょうど32ピクセル）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_32x1_full_word() {
     let mut enc = ArithEncoder::new();
     let data = [0xFFFF_FFFFu32];
@@ -67,7 +67,7 @@ fn bitimage_32x1_full_word() {
 
 /// 33x1画像（幅が32より1大きい = 2ワード）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_33x1_two_words() {
     let mut enc = ArithEncoder::new();
     let data = [0xFFFF_FFFFu32, 0x8000_0000u32]; // 2ワード
@@ -78,7 +78,7 @@ fn bitimage_33x1_two_words() {
 
 /// 4x4全白画像
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_4x4_all_white() {
     let mut enc = ArithEncoder::new();
     let data = [0u32; 4]; // 4行、各行1ワード
@@ -89,7 +89,7 @@ fn bitimage_4x4_all_white() {
 
 /// 4x4全黒画像
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_4x4_all_black() {
     let mut enc = ArithEncoder::new();
     // 幅4ピクセル: MSBから4ビットが1 = 0xF0000000
@@ -101,7 +101,7 @@ fn bitimage_4x4_all_black() {
 
 /// TPGD: 全白2行はTPGDで圧縮効果があるため、non-TPGDより短いか同じ
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_tpgd_identical_rows() {
     let mut enc_notpgd = ArithEncoder::new();
     let data = [0u32, 0u32]; // 4ピクセル幅 × 2行、全白
@@ -119,7 +119,7 @@ fn bitimage_tpgd_identical_rows() {
 
 /// TPGD: 同じ行と異なる行は異なる符号化をする
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_tpgd_same_vs_different_rows() {
     let mut enc_same = ArithEncoder::new();
     let data_same = [0u32, 0u32]; // 同一行が2行
@@ -136,7 +136,7 @@ fn bitimage_tpgd_same_vs_different_rows() {
 
 /// 決定論的: 同じ入力から常に同じ出力
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_deterministic() {
     let data = [0xDEAD_BEEFu32, 0x0102_0304u32];
 
@@ -153,7 +153,7 @@ fn bitimage_deterministic() {
 
 /// 8x8チェッカーボードパターン
 #[test]
-#[ignore = "not yet implemented"]
+
 fn bitimage_8x8_checkerboard() {
     let mut enc = ArithEncoder::new();
     // チェッカーボード: 奇数行=0xAA000000, 偶数行=0x55000000 (8bit幅)
@@ -178,7 +178,7 @@ fn bitimage_8x8_checkerboard() {
 
 /// 同一画像間のリファインメント（差分なし）
 #[test]
-#[ignore = "not yet implemented"]
+
 fn refine_identical_images() {
     let mut enc = ArithEncoder::new();
     let data = [0u32; 1]; // 1x1 白
@@ -189,7 +189,7 @@ fn refine_identical_images() {
 
 /// 異なる画像間のリファインメント
 #[test]
-#[ignore = "not yet implemented"]
+
 fn refine_different_images() {
     let mut enc = ArithEncoder::new();
     let templ = [0u32; 1];
@@ -201,7 +201,7 @@ fn refine_different_images() {
 
 /// 同一と異なる画像は異なる出力を生成する
 #[test]
-#[ignore = "not yet implemented"]
+
 fn refine_identical_vs_different() {
     let data_white = [0u32];
     let data_black = [0x8000_0000u32];
@@ -219,7 +219,7 @@ fn refine_identical_vs_different() {
 
 /// オフセット ox=-1, 0, 1 で動作することを確認
 #[test]
-#[ignore = "not yet implemented"]
+
 fn refine_offset_variations() {
     let templ = [0u32; 2]; // 2x2
     let target = [0u32; 2];
