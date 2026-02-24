@@ -256,9 +256,22 @@ impl ArithEncoder {
         if symcodelen == 0 {
             return;
         }
+        assert!(
+            symcodelen <= 31,
+            "symcodelen {symcodelen} exceeds maximum of 31"
+        );
+        assert!(
+            value < (1u32 << symcodelen),
+            "value {value} does not fit in {symcodelen} bits"
+        );
         self.ensure_iaid_ctx(symcodelen);
 
-        let mask = (1u32 << (symcodelen + 1)) - 1;
+        // symcodelen == 31 のとき (1u32 << 32) - 1 はオーバーフローするため特別扱い
+        let mask = if symcodelen < 31 {
+            (1u32 << (symcodelen + 1)) - 1
+        } else {
+            u32::MAX
+        };
         let mut shifted = value << (32 - symcodelen);
         let mut prev: u32 = 1;
 
