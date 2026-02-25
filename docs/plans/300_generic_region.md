@@ -1,6 +1,6 @@
 # Phase 3: ジェネリックリージョン符号化
 
-**Status**: IN_PROGRESS
+**Status**: IMPLEMENTED
 
 ## 概要
 
