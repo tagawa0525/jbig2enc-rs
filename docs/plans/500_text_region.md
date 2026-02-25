@@ -1,6 +1,6 @@
 # Phase 5: テキストリージョン符号化
 
-**Status**: PLANNED
+**Status**: IMPLEMENTED
 
 ## 概要
 
