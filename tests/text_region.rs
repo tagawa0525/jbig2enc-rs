@@ -67,6 +67,81 @@ fn rejects_unknown_class_id() {
     assert!(encode_text_region(&instances, &symbols, &default_cfg(&symmap, 1)).is_err());
 }
 
+/// symmap に登録されている class_id でも symbols 配列の範囲外ならエラーになること。
+#[test]
+fn rejects_class_id_in_symmap_but_out_of_bounds_symbols() {
+    // symbols は 1 要素（index 0 のみ有効）
+    let symbols = vec![white_sym(10, 10)];
+    // symmap は class_id=1 を持つが、symbols.len()=1 なので範囲外
+    let mut symmap = HashMap::new();
+    symmap.insert(1usize, 0usize);
+    let instances = vec![SymbolInstance {
+        x: 0,
+        y: 10,
+        class_id: 1,
+    }];
+    let cfg = TextRegionConfig {
+        symbits: 1,
+        ..default_cfg(&symmap, 1)
+    };
+    assert!(encode_text_region(&instances, &symbols, &cfg).is_err());
+}
+
+/// symmap が返す symid が symbits に収まらない場合はエラーになること。
+#[test]
+fn rejects_symid_not_fit_in_symbits() {
+    let symbols = vec![white_sym(10, 10)];
+    // symbits=1 → max_symid=2。symmap は symid=2 を返す → 2 >= 2 → エラー
+    let mut symmap = HashMap::new();
+    symmap.insert(0usize, 2usize);
+    let instances = vec![SymbolInstance {
+        x: 0,
+        y: 10,
+        class_id: 0,
+    }];
+    let cfg = TextRegionConfig {
+        symbits: 1,
+        ..default_cfg(&symmap, 1)
+    };
+    assert!(encode_text_region(&instances, &symbols, &cfg).is_err());
+}
+
+/// symbits=0 のとき、symid=1 が返ってきたらエラーになること（1 >= 1<<0=1）。
+#[test]
+fn rejects_symid_overflow_with_symbits_zero() {
+    let symbols = vec![white_sym(10, 10)];
+    // symbits=0 → max_symid=1。symid=1 → 1 >= 1 → エラー
+    let mut symmap = HashMap::new();
+    symmap.insert(0usize, 1usize);
+    let instances = vec![SymbolInstance {
+        x: 0,
+        y: 10,
+        class_id: 0,
+    }];
+    let cfg = TextRegionConfig {
+        symbits: 0,
+        ..default_cfg(&symmap, 1)
+    };
+    assert!(encode_text_region(&instances, &symbols, &cfg).is_err());
+}
+
+/// symbits が 31 を超えるとエラーになること（encode_iaid の内部制約）。
+#[test]
+fn rejects_symbits_gt_31() {
+    let symbols = vec![white_sym(10, 10)];
+    let symmap = identity_symmap(1);
+    let instances = vec![SymbolInstance {
+        x: 0,
+        y: 10,
+        class_id: 0,
+    }];
+    let cfg = TextRegionConfig {
+        symbits: 32,
+        ..default_cfg(&symmap, 1)
+    };
+    assert!(encode_text_region(&instances, &symbols, &cfg).is_err());
+}
+
 // ---------------------------------------------------------------------------
 // 基本動作テスト
 // ---------------------------------------------------------------------------

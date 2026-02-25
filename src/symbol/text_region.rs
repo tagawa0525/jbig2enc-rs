@@ -60,6 +60,14 @@ pub fn encode_text_region(
         )));
     }
 
+    // symbits は encode_iaid の内部制約（assert: symcodelen <= 31）に合わせる
+    if cfg.symbits > 31 {
+        return Err(Jbig2Error::InvalidInput(format!(
+            "symbits {} exceeds maximum of 31",
+            cfg.symbits
+        )));
+    }
+
     // 空リストは空データで返す
     if instances.is_empty() {
         return Ok(TextRegionResult { data: Vec::new() });
@@ -67,11 +75,8 @@ pub fn encode_text_region(
 
     // 全インスタンスのsymidを事前に解決（エラーを早期検出）
     // class_id が symbols の範囲内か、symid が symbits に収まるかを同時に検証する。
-    let max_symid: usize = if cfg.symbits < usize::BITS {
-        1usize << cfg.symbits
-    } else {
-        usize::MAX
-    };
+    // symbits <= 31 が保証されているので 1usize << cfg.symbits は安全。
+    let max_symid = 1usize << cfg.symbits;
     let symids: Vec<usize> = instances
         .iter()
         .map(|inst| {
