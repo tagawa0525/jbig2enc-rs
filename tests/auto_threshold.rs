@@ -54,7 +54,7 @@ fn page_with_varied_symbols() -> leptonica::Pix {
 
 /// auto_threshold を呼んでもパニックしないこと。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_no_panic() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -63,7 +63,7 @@ fn auto_threshold_no_panic() {
 
 /// auto_threshold 後も pages_complete + produce_page が成功すること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_then_encode() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -76,7 +76,7 @@ fn auto_threshold_then_encode() {
 
 /// auto_threshold をマルチページで呼んでも正しく動作すること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_multipage() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -96,7 +96,7 @@ fn auto_threshold_multipage() {
 
 /// auto_threshold_using_hash を呼んでもパニックしないこと。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_using_hash_no_panic() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -105,7 +105,7 @@ fn auto_threshold_using_hash_no_panic() {
 
 /// auto_threshold_using_hash 後も pages_complete + produce_page が成功すること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_using_hash_then_encode() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -118,7 +118,7 @@ fn auto_threshold_using_hash_then_encode() {
 
 /// auto_threshold_using_hash をマルチページで呼んでも正しく動作すること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn auto_threshold_using_hash_multipage() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_identical_symbols()).unwrap();
@@ -138,7 +138,7 @@ fn auto_threshold_using_hash_multipage() {
 
 /// 両手法で符号化後の出力が同一であること（同一入力に対して）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn both_methods_produce_same_output() {
     // auto_threshold
     let mut ctx1 = Jbig2Context::new(0.85, 0.5, 300, 300, false, -1).unwrap();
