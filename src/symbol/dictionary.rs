@@ -52,20 +52,29 @@ pub fn encode_symbol_table(
     }
 
     // シンボルの有効寸法を取得（unborder時はボーダー除去後のサイズ）
-    let effective_dims: Vec<(u32, u32)> = symbol_indices
-        .iter()
-        .map(|&idx| {
+    let effective_dims: Vec<(u32, u32)> = {
+        let mut dims = Vec::with_capacity(n);
+        for &idx in symbol_indices {
             let pix = &symbols[idx];
-            if unborder {
-                (
-                    pix.width().saturating_sub(2 * border_size),
-                    pix.height().saturating_sub(2 * border_size),
-                )
+            let (w, h) = if unborder {
+                let w = pix.width().saturating_sub(2 * border_size);
+                let h = pix.height().saturating_sub(2 * border_size);
+                if w == 0 || h == 0 {
+                    return Err(Jbig2Error::InvalidInput(format!(
+                        "symbol {idx} has zero effective dimension after border removal \
+                         ({}x{} with border_size={border_size})",
+                        pix.width(),
+                        pix.height()
+                    )));
+                }
+                (w, h)
             } else {
                 (pix.width(), pix.height())
-            }
-        })
-        .collect();
+            };
+            dims.push((w, h));
+        }
+        dims
+    };
 
     // インデックス列を (height, width) でソート。
     // C++版: 1) 全体を高さ順にソート、2) 各高さクラス内を幅順にソート。
