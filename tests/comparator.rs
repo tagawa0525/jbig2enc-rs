@@ -32,7 +32,6 @@ fn pix_with_pixels(w: u32, h: u32, pixels: &[(u32, u32)]) -> Pix {
 
 /// 同一の全白画像は等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn identical_white_images() {
     let a = white_pix(36, 36);
     let b = white_pix(36, 36);
@@ -41,7 +40,6 @@ fn identical_white_images() {
 
 /// 同一の全黒画像は等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn identical_black_images() {
     let a = black_pix(36, 36);
     let b = black_pix(36, 36);
@@ -50,7 +48,6 @@ fn identical_black_images() {
 
 /// 同一のパターンを持つ画像は等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn identical_pattern() {
     let pixels: Vec<(u32, u32)> = (0..36).map(|i| (i, i)).collect();
     let a = pix_with_pixels(36, 36, &pixels);
@@ -64,7 +61,6 @@ fn identical_pattern() {
 
 /// 幅が異なる画像は非等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn different_width() {
     let a = white_pix(36, 36);
     let b = white_pix(37, 36);
@@ -73,7 +69,6 @@ fn different_width() {
 
 /// 高さが異なる画像は非等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn different_height() {
     let a = white_pix(36, 36);
     let b = white_pix(36, 37);
@@ -86,7 +81,6 @@ fn different_height() {
 
 /// 全白 vs 全黒は差分が大きすぎて非等価（25%閾値で棄却）。
 #[test]
-#[ignore = "not yet implemented"]
 fn white_vs_black_rejected() {
     let a = black_pix(36, 36);
     let b = white_pix(36, 36);
@@ -97,7 +91,6 @@ fn white_vs_black_rejected() {
 /// 36x36の黒画像に対し、2ピクセルだけ異なる → XOR差分2。
 /// pcount = 36*36 = 1296, threshold = 324。2 < 324 → パス。
 #[test]
-#[ignore = "not yet implemented"]
 fn small_difference_accepted() {
     let a = black_pix(36, 36);
     // bは36x36の黒画像から2ピクセルだけ白にしたもの
@@ -117,7 +110,6 @@ fn small_difference_accepted() {
 /// pcount=0 → threshold=0 → threshold_pixel_sum(0) は XOR=0 で false (not above)。
 /// グリッド分析でも全セル0 → 全チェックパス → 等価。
 #[test]
-#[ignore = "not yet implemented"]
 fn both_all_white() {
     let a = white_pix(36, 36);
     let b = white_pix(36, 36);
@@ -127,7 +119,6 @@ fn both_all_white() {
 /// 片方全白・片方に少数ピクセル。
 /// pcount=0 → threshold=0 → XOR差分が1以上ならthreshold超過 → false。
 #[test]
-#[ignore = "not yet implemented"]
 fn white_vs_few_pixels_rejected() {
     let a = white_pix(36, 36);
     let b = pix_with_pixels(36, 36, &[(18, 18)]);
@@ -146,7 +137,6 @@ fn white_vs_few_pixels_rejected() {
 /// 左上2x2セル（8x8ピクセル）内に差分を16ピクセル配置:
 /// 2x2ブロック合計 = 16 >= 12.56 → 棄却。
 #[test]
-#[ignore = "not yet implemented"]
 fn concentrated_difference_rejected() {
     // firstは全黒36x36
     let first = black_pix(36, 36);
@@ -170,7 +160,6 @@ fn concentrated_difference_rejected() {
 /// 水平方向に帯状の差分 → hline_thresh チェックで棄却。
 /// 36x36画像の中央付近に水平帯（幅36、高さ4）の差分を配置。
 #[test]
-#[ignore = "not yet implemented"]
 fn horizontal_line_difference_rejected() {
     let first = black_pix(36, 36);
     let mut pm = PixMut::new(36, 36, PixelDepth::Bit1).unwrap();
@@ -192,7 +181,6 @@ fn horizontal_line_difference_rejected() {
 /// 垂直方向に帯状の差分 → vline_thresh チェックで棄却。
 /// 36x36画像の中央付近に垂直帯（高さ36、幅4）の差分を配置。
 #[test]
-#[ignore = "not yet implemented"]
 fn vertical_line_difference_rejected() {
     let first = black_pix(36, 36);
     let mut pm = PixMut::new(36, 36, PixelDepth::Bit1).unwrap();
@@ -211,40 +199,37 @@ fn vertical_line_difference_rejected() {
 // エッジケース
 // ---------------------------------------------------------------------------
 
-/// 最小サイズ画像（9x9）。
-/// divider=9 → 各セル1x1。
+/// 最小サイズ画像（9x9）の同一ペア。
+/// divider=9 → 各セル1x1 → hline_thresh=(1*(1/2))*0.9=0。
+/// 0 >= 0 が true になるため、同一画像でも非等価を返す（C++と同一動作）。
 #[test]
-#[ignore = "not yet implemented"]
-fn minimal_size_9x9() {
+fn minimal_size_9x9_degenerate_threshold() {
     let a = black_pix(9, 9);
     let b = black_pix(9, 9);
-    assert!(are_equivalent(&a, &b).unwrap());
+    assert!(!are_equivalent(&a, &b).unwrap());
 }
 
 /// dividerで割り切れないサイズ（37x37）。
 /// 余りピクセルが先頭セルに分配される。
 #[test]
-#[ignore = "not yet implemented"]
 fn non_divisible_size() {
     let a = black_pix(37, 37);
     let b = black_pix(37, 37);
     assert!(are_equivalent(&a, &b).unwrap());
 }
 
-/// 9未満のサイズ（5x5）。
-/// vertical_part = 5/9 = 0, horizontal_part = 5/9 = 0。
-/// 各セル0ピクセル幅→グリッド分析は実質スキップ。
+/// 9未満のサイズ（5x5）の同一ペア。
+/// vertical_part = 5/9 = 0, horizontal_part = 5/9 = 0 → 全閾値が0。
+/// 0 >= 0 が true になるため非等価（C++と同一動作）。
 #[test]
-#[ignore = "not yet implemented"]
-fn tiny_image_below_9() {
+fn tiny_image_below_9_degenerate_threshold() {
     let a = black_pix(5, 5);
     let b = black_pix(5, 5);
-    assert!(are_equivalent(&a, &b).unwrap());
+    assert!(!are_equivalent(&a, &b).unwrap());
 }
 
 /// 幅が32の倍数でない場合のWPL一致確認。
 #[test]
-#[ignore = "not yet implemented"]
 fn non_32_aligned_width() {
     let a = black_pix(33, 20);
     let b = black_pix(33, 20);
