@@ -478,4 +478,22 @@ impl Jbig2Context {
 
         Ok(output)
     }
+
+    /// シンボルクラスの統合を行う（ブルートフォース版）。
+    ///
+    /// C++版 `jbig2enc_auto_threshold()`（`jbig2enc.cc:357-376`）に対応。
+    /// `pages_complete()` 前に呼ぶことで、視覚的に等価なシンボルクラスを統合し
+    /// シンボル辞書のサイズを削減する。
+    pub fn auto_threshold(&mut self) {
+        todo!("auto_threshold not yet implemented")
+    }
+
+    /// シンボルクラスの統合を行う（ハッシュ加速版）。
+    ///
+    /// C++版 `jbig2enc_auto_threshold_using_hash()`（`jbig2enc.cc:428-487`）に対応。
+    /// ハッシュ値でバケットに分けてからバケット内で比較することで、
+    /// `auto_threshold()` より高速に動作する。
+    pub fn auto_threshold_using_hash(&mut self) {
+        todo!("auto_threshold_using_hash not yet implemented")
+    }
 }
