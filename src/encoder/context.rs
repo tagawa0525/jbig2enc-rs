@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use leptonica::recog::JbComponent;
 use leptonica::recog::jbclass::{TEMPLATE_BORDER, correlation_init};
@@ -529,9 +529,16 @@ impl Jbig2Context {
         // Phase 1: ハッシュバケット構築
         let mut buckets: HashMap<u32, Vec<usize>> = HashMap::new();
         for (i, pix) in self.classer.pixat.iter().enumerate() {
+            let holes = match pix_count_components(pix, ConnectivityType::FourWay) {
+                Ok(count) => count,
+                Err(_) => {
+                    // 連結成分数を取得できないテンプレートはバケットに入れない。
+                    // Phase 2 の比較対象から外れるため、統合されずに残る。
+                    continue;
+                }
+            };
             let w = pix.width();
             let h = pix.height();
-            let holes = pix_count_components(pix, ConnectivityType::FourWay).unwrap_or(0);
             let hash = (holes + 10 * h + 10000 * w) % 10_000_000;
             buckets.entry(hash).or_default().push(i);
         }
@@ -567,13 +574,17 @@ impl Jbig2Context {
             }
         }
 
-        // Phase 3: バッチリインデックス（naclass の参照先を統合先に変更）
+        // Phase 3: リダイレクトテーブルで naclass を 1 パスで更新
+        let n = self.classer.pixat.len();
+        let mut redirect: Vec<usize> = (0..n).collect();
         for (representant, to_unite) in &representant_map {
-            let to_unite_set: HashSet<usize> = to_unite.iter().copied().collect();
-            for class_id in &mut self.classer.naclass {
-                if to_unite_set.contains(class_id) {
-                    *class_id = *representant;
-                }
+            for &idx in to_unite {
+                redirect[idx] = *representant;
+            }
+        }
+        for class_id in &mut self.classer.naclass {
+            if *class_id < n {
+                *class_id = redirect[*class_id];
             }
         }
 
@@ -585,23 +596,22 @@ impl Jbig2Context {
         to_remove.sort_unstable();
         to_remove.dedup();
 
+        // to_remove は削除前のインデックスで固定されているため、
+        // swap + pop を使う場合は必ず高いインデックスから順に処理する。
+        // こうすることで、まだ処理していないインデックスより前側の要素だけが
+        // 移動し、to_remove 内の残りのインデックスが無効化されない。
         for &idx in to_remove.iter().rev() {
-            let last = self.classer.pixat.len() - 1;
-            if idx != last {
-                self.classer.pixat.swap(idx, last);
-                for class_id in &mut self.classer.naclass {
-                    if *class_id == last {
-                        *class_id = idx;
-                    }
-                }
-            }
-            self.classer.pixat.pop();
-            self.classer.nclass -= 1;
+            swap_remove_class_at(
+                &mut self.classer.pixat,
+                &mut self.classer.naclass,
+                &mut self.classer.nclass,
+                idx,
+            );
         }
     }
 }
 
-/// 2つのテンプレートを統合する（swap_remove パターン）。
+/// 2つのテンプレートを統合する。
 ///
 /// `second` のテンプレートへの参照を `first` にリダイレクトし、
 /// `pixat` から `second` を削除する。
@@ -621,14 +631,30 @@ fn unite_and_remove(
         }
     }
 
-    // swap_remove パターンで pixat[second] を削除
+    swap_remove_class_at(pixat, naclass, nclass, second);
+}
+
+/// `pixat[idx]` を swap_remove し、末尾から移動した要素への参照を更新する。
+///
+/// - `pixat[idx]` を `pixat[last]` と swap し、pop で末尾を削除する。
+/// - `naclass` 内の `last` への参照を `idx` に書き換える。
+/// - `nclass` を 1 減らす。
+///
+/// 複数インデックスを一括削除する場合は、呼び出し側で必ず降順（高インデックス
+/// から順）に呼び出すこと。昇順で呼ぶと swap によってまだ削除していない
+/// インデックスの要素が移動し、不正なアクセスを引き起こす。
+fn swap_remove_class_at(
+    pixat: &mut Vec<Pix>,
+    naclass: &mut [usize],
+    nclass: &mut usize,
+    idx: usize,
+) {
     let last = pixat.len() - 1;
-    if second != last {
-        pixat.swap(second, last);
-        // 最後尾から移動した要素の参照を更新
+    if idx != last {
+        pixat.swap(idx, last);
         for class_id in naclass.iter_mut() {
             if *class_id == last {
-                *class_id = second;
+                *class_id = idx;
             }
         }
     }
