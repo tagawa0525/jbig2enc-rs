@@ -30,7 +30,7 @@ fn bordered_symbol(inner_w: u32, inner_h: u32, border: u32) -> Pix {
 
 /// 範囲外のインデックスを渡すとエラーになること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn rejects_out_of_bounds_index() {
     let symbols = vec![white_symbol(10, 10)];
     let result = encode_symbol_table(&symbols, &[0, 5], false, 0);
@@ -43,7 +43,7 @@ fn rejects_out_of_bounds_index() {
 
 /// 空のインデックスリストでは空の結果を返す。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn empty_symbol_list() {
     let symbols = vec![white_symbol(10, 10)];
     let result = encode_symbol_table(&symbols, &[], false, 0).unwrap();
@@ -53,7 +53,7 @@ fn empty_symbol_list() {
 
 /// 単一シンボルをエンコードできること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn single_symbol() {
     let symbols = vec![white_symbol(16, 16)];
     let result = encode_symbol_table(&symbols, &[0], false, 0).unwrap();
@@ -64,7 +64,7 @@ fn single_symbol() {
 
 /// 複数シンボルをエンコードできること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn multiple_symbols() {
     let symbols = vec![
         white_symbol(10, 10),
@@ -89,7 +89,7 @@ fn multiple_symbols() {
 ///
 /// 符号化番号: index1=0, index2=1, index0=2
 #[test]
-#[ignore = "not yet implemented"]
+
 fn sorted_by_height() {
     let symbols = vec![
         white_symbol(20, 20), // index 0
@@ -111,7 +111,7 @@ fn sorted_by_height() {
 ///   index 1: 10x20 → ソート後0番目
 ///   index 2: 20x20 → ソート後1番目
 #[test]
-#[ignore = "not yet implemented"]
+
 fn same_height_sorted_by_width() {
     let symbols = vec![
         white_symbol(30, 20), // index 0
@@ -134,7 +134,7 @@ fn same_height_sorted_by_width() {
 ///   index 2: 15x20 → 高さ20クラス、幅15 → 符号化番号2
 ///   index 3: 25x20 → 高さ20クラス、幅25 → 符号化番号3
 #[test]
-#[ignore = "not yet implemented"]
+
 fn multiple_height_classes() {
     let symbols = vec![
         white_symbol(20, 10), // index 0
@@ -159,7 +159,7 @@ fn multiple_height_classes() {
 /// unborder=true の場合、ボーダーを除去して符号化する。
 /// ボーダー付きとボーダーなしで出力が異なることを検証。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn unborder_produces_different_output() {
     // ボーダー4のシンボル（内部16x16、全体24x24）
     let bordered = bordered_symbol(16, 16, 4);
@@ -179,7 +179,7 @@ fn unborder_produces_different_output() {
 ///   index 0: 全体28x28 → 除去後20x20 → 符号化番号1
 ///   index 1: 全体18x18 → 除去後10x10 → 符号化番号0
 #[test]
-#[ignore = "not yet implemented"]
+
 fn unborder_sorting_uses_inner_size() {
     let symbols = vec![
         bordered_symbol(20, 20, 4), // index 0: 28x28 → 20x20
@@ -198,7 +198,7 @@ fn unborder_sorting_uses_inner_size() {
 
 /// symbol_indices がシンボル配列の一部だけを指定する場合。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn partial_symbol_indices() {
     let symbols = vec![
         white_symbol(10, 10), // index 0 — 含まない
@@ -221,7 +221,7 @@ fn partial_symbol_indices() {
 
 /// 全シンボルが同一サイズの場合。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn all_same_size() {
     let symbols = vec![
         white_symbol(16, 16),
@@ -238,7 +238,7 @@ fn all_same_size() {
 
 /// 黒シンボルと白シンボルで出力が異なること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn different_content_different_output() {
     let white = vec![white_symbol(16, 16)];
     let black = vec![black_symbol(16, 16)];
@@ -251,7 +251,7 @@ fn different_content_different_output() {
 
 /// 幅が32の倍数でないシンボル。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn non_32_aligned_symbol_width() {
     let symbols = vec![white_symbol(13, 7)];
     let result = encode_symbol_table(&symbols, &[0], false, 0);
