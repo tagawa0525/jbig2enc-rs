@@ -196,6 +196,35 @@ fn vertical_line_difference_rejected() {
 }
 
 // ---------------------------------------------------------------------------
+// 交差線パターンテスト
+// ---------------------------------------------------------------------------
+
+/// 対角線方向に差分が分布 → 交差線チェック（Check 3）で棄却。
+/// 36x36画像、9x9グリッド → 各セル4x4ピクセル。
+/// hline_thresh = (4 * (4/2)) * 0.9 = 7.2 → 7。
+/// 対角3セル (0,0),(1,1),(2,2) に各3ピクセルの差分 → left_cross = 9 >= 7 → 棄却。
+#[test]
+fn diagonal_difference_rejected() {
+    let first = black_pix(36, 36);
+    let mut pm = PixMut::new(36, 36, PixelDepth::Bit1).unwrap();
+    pm.set_all_arbitrary(1).unwrap();
+    // セル(0,0): x=[0,4), y=[0,4) → 3ピクセル差分
+    pm.set_pixel(0, 0, 0).unwrap();
+    pm.set_pixel(1, 1, 0).unwrap();
+    pm.set_pixel(2, 2, 0).unwrap();
+    // セル(1,1): x=[4,8), y=[4,8) → 3ピクセル差分
+    pm.set_pixel(4, 4, 0).unwrap();
+    pm.set_pixel(5, 5, 0).unwrap();
+    pm.set_pixel(6, 6, 0).unwrap();
+    // セル(2,2): x=[8,12), y=[8,12) → 3ピクセル差分
+    pm.set_pixel(8, 8, 0).unwrap();
+    pm.set_pixel(9, 9, 0).unwrap();
+    pm.set_pixel(10, 10, 0).unwrap();
+    let second: Pix = pm.into();
+    assert!(!are_equivalent(&first, &second).unwrap());
+}
+
+// ---------------------------------------------------------------------------
 // エッジケース
 // ---------------------------------------------------------------------------
 
