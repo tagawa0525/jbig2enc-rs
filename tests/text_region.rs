@@ -39,7 +39,7 @@ fn default_cfg<'a>(symmap: &'a HashMap<usize, usize>, n: usize) -> TextRegionCon
 
 /// strip_width に不正な値（3）を渡すとエラーになること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn rejects_invalid_strip_width() {
     let symbols = vec![white_sym(10, 10)];
     let symmap = identity_symmap(1);
@@ -57,7 +57,7 @@ fn rejects_invalid_strip_width() {
 
 /// symmap に存在しない class_id を持つインスタンスはエラーになること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn rejects_unknown_class_id() {
     let symbols = vec![white_sym(10, 10)];
     let symmap = identity_symmap(1);
@@ -75,7 +75,7 @@ fn rejects_unknown_class_id() {
 
 /// 空のインスタンスリストでは空のデータを返す。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn empty_instances() {
     let symbols = vec![white_sym(10, 10)];
     let symmap = identity_symmap(1);
@@ -85,7 +85,7 @@ fn empty_instances() {
 
 /// 単一シンボルをエンコードできること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn single_instance() {
     let symbols = vec![white_sym(16, 16)];
     let symmap = identity_symmap(1);
@@ -100,7 +100,7 @@ fn single_instance() {
 
 /// 複数シンボルをエンコードできること。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn multiple_instances() {
     let symbols = vec![white_sym(10, 10), white_sym(12, 12)];
     let symmap = identity_symmap(2);
@@ -130,7 +130,7 @@ fn multiple_instances() {
 
 /// 同一Y座標と異なるY座標では出力が異なる。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn strip_width_1_same_y_same_strip() {
     let symbols = vec![white_sym(10, 10), white_sym(10, 10)];
     let symmap = identity_symmap(2);
@@ -169,7 +169,7 @@ fn strip_width_1_same_y_same_strip() {
 
 /// Y座標の逆順で渡してもソートして同じ出力になる。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn instances_sorted_by_y() {
     let symbols = vec![white_sym(10, 10), white_sym(10, 10)];
     let symmap = identity_symmap(2);
@@ -208,7 +208,7 @@ fn instances_sorted_by_y() {
 
 /// 同一ストリップ内でX座標逆順で渡してもソートして同じ出力になる。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn instances_sorted_by_x_within_strip() {
     let symbols = vec![white_sym(10, 10), white_sym(10, 10)];
     let symmap = identity_symmap(2);
@@ -251,7 +251,7 @@ fn instances_sorted_by_x_within_strip() {
 
 /// strip_width=1 と strip_width=2 では出力が異なる。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn different_strip_widths_differ() {
     let symbols = vec![white_sym(10, 10)];
     let symmap = identity_symmap(1);
@@ -279,7 +279,7 @@ fn different_strip_widths_differ() {
 
 /// symmap2 に存在するシンボルIDがグローバル辞書のサイズだけオフセットされる。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn symmap2_offset_by_global_count() {
     let symbols = vec![white_sym(10, 10), white_sym(10, 10)];
     let symmap = {
@@ -315,7 +315,7 @@ fn symmap2_offset_by_global_count() {
 
 /// 幅1の最小シンボル。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn minimal_symbol() {
     let symbols = vec![white_sym(1, 1)];
     let symmap = identity_symmap(1);
@@ -330,7 +330,7 @@ fn minimal_symbol() {
 
 /// 同一シンボルを大量に配置。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn many_instances_same_symbol() {
     let symbols = vec![white_sym(8, 8)];
     let symmap = identity_symmap(1);
@@ -347,7 +347,7 @@ fn many_instances_same_symbol() {
 
 /// 複数行のテキスト（異なるY座標のシンボル）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn multiline_text() {
     let symbols = vec![white_sym(10, 12)];
     let symmap = identity_symmap(1);
@@ -370,7 +370,7 @@ fn multiline_text() {
 
 /// unborder=true の場合、シンボル幅計算が変わるため同一ストリップの2シンボルで出力が変化する。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn unborder_affects_curs_update() {
     // 全体18x18（ボーダー4、内部10x10）のシンボルを2つ同一ストリップに配置
     let make_sym = || -> Pix { PixMut::new(18, 18, PixelDepth::Bit1).unwrap().into() };
@@ -404,7 +404,7 @@ fn unborder_affects_curs_update() {
 
 /// 白シンボルと黒シンボルはエンコード可能（内容は出力に影響しない、幅のみ）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn different_symbol_content_encodes_successfully() {
     let symmap = identity_symmap(1);
     let instances = vec![SymbolInstance {
