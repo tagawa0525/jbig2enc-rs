@@ -1,4 +1,5 @@
 pub mod arith;
+pub mod comparator;
 pub mod encoder;
 pub mod error;
 pub mod symbol;
