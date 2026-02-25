@@ -66,9 +66,31 @@ pub fn encode_text_region(
     }
 
     // 全インスタンスのsymidを事前に解決（エラーを早期検出）
+    // class_id が symbols の範囲内か、symid が symbits に収まるかを同時に検証する。
+    let max_symid: usize = if cfg.symbits < usize::BITS {
+        1usize << cfg.symbits
+    } else {
+        usize::MAX
+    };
     let symids: Vec<usize> = instances
         .iter()
-        .map(|inst| resolve_symid(inst.class_id, cfg))
+        .map(|inst| {
+            if inst.class_id >= symbols.len() {
+                return Err(Jbig2Error::InvalidInput(format!(
+                    "class_id {} out of bounds (symbols.len() = {})",
+                    inst.class_id,
+                    symbols.len()
+                )));
+            }
+            let symid = resolve_symid(inst.class_id, cfg)?;
+            if symid >= max_symid {
+                return Err(Jbig2Error::InvalidInput(format!(
+                    "resolved symid {symid} does not fit in {} bits",
+                    cfg.symbits
+                )));
+            }
+            Ok(symid)
+        })
         .collect::<Result<_, _>>()?;
 
     // インスタンスをY座標でソート（安定ソート）
