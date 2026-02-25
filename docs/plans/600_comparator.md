@@ -1,6 +1,6 @@
 # Phase 6: シンボル視覚的等価性判定
 
-**Status**: PLANNED
+**Status**: IMPLEMENTED
 
 ## 概要
 
