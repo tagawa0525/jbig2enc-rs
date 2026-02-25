@@ -1,6 +1,6 @@
 # Phase 2: ワイヤフォーマット (`wire/`)
 
-**Status**: IN_PROGRESS
+**Status**: IMPLEMENTED
 
 ## 概要
 
