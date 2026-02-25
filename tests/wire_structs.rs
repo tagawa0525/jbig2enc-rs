@@ -21,7 +21,7 @@ use jbig2enc_rs::wire::{
 ///           → 0b0000_0001 = 0x01
 /// [9..13] = n_pages: htonl(1) = 00 00 00 01
 #[test]
-#[ignore = "not yet implemented"]
+
 fn file_header_generic_single_page() {
     let header = FileHeader {
         organisation_type: true,
@@ -42,7 +42,7 @@ fn file_header_generic_single_page() {
 /// マルチページ時のファイルヘッダ（jbig2enc.cc:672-678）。
 /// n_pages = 3 の場合。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn file_header_multipage() {
     let header = FileHeader {
         organisation_type: true,
@@ -61,7 +61,7 @@ fn file_header_multipage() {
 
 /// unknown_n_pages フラグ。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn file_header_unknown_pages() {
     let header = FileHeader {
         organisation_type: true,
@@ -99,7 +99,7 @@ fn file_header_unknown_pages() {
 ///          → 0b0000_0001 = 0x01
 /// [17..19] segment_flags: 0x0000
 #[test]
-#[ignore = "not yet implemented"]
+
 fn page_info_generic_lossless() {
     let info = PageInfo {
         width: 640,
@@ -130,7 +130,7 @@ fn page_info_generic_lossless() {
 
 /// テキストリージョン用ページ情報（contains_refinements=true）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn page_info_with_refinement() {
     let info = PageInfo {
         width: 1024,
@@ -177,7 +177,7 @@ fn page_info_with_refinement() {
 ///          → 0b0000_1000 = 0x08
 /// [18..26] AT flags: 03 FF FD FF 02 FE FE FE
 #[test]
-#[ignore = "not yet implemented"]
+
 fn generic_region_tpgd_on() {
     let region = GenericRegion {
         width: 640,
@@ -217,7 +217,7 @@ fn generic_region_tpgd_on() {
 
 /// TPGD無効のジェネリックリージョン。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn generic_region_tpgd_off() {
     let region = GenericRegion {
         width: 100,
@@ -262,7 +262,7 @@ fn generic_region_tpgd_off() {
 /// [10..14] exsyms:  00 00 00 2A (BE)
 /// [14..18] newsyms: 00 00 00 2A (BE)
 #[test]
-#[ignore = "not yet implemented"]
+
 fn symbol_dict_typical() {
     let dict = SymbolDict {
         sdhuff: false,
@@ -329,7 +329,7 @@ fn symbol_dict_typical() {
 ///          bit4-5=refcorner(0), bit6=transposed(0), bit7=sbcombop1(0)
 ///          → 0x00
 #[test]
-#[ignore = "not yet implemented"]
+
 fn text_region_no_refinement() {
     let region = TextRegion {
         width: 1024,
@@ -364,7 +364,7 @@ fn text_region_no_refinement() {
 
 /// リファインメント有りのテキストリージョン。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn text_region_with_refinement() {
     let region = TextRegion {
         width: 800,
@@ -398,7 +398,7 @@ fn text_region_with_refinement() {
 /// textreg_atflags.a2x = -1; textreg_atflags.a2y = -1;
 /// ```
 #[test]
-#[ignore = "not yet implemented"]
+
 fn text_region_at_flags() {
     let flags = TextRegionAtFlags {
         a1x: -1,
@@ -421,7 +421,7 @@ fn text_region_at_flags() {
 /// textreg_syminsts.sbnuminstances = htonl(256);
 /// ```
 #[test]
-#[ignore = "not yet implemented"]
+
 fn text_region_sym_insts() {
     let insts = TextRegionSymInsts {
         sbnuminstances: 256,

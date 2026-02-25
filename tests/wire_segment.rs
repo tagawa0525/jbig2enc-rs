@@ -150,7 +150,7 @@ fn segment_total_size_with_refs() {
 ///
 /// data_length: htonl(19) = 00 00 00 13
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_page_info_simple() {
     let seg = SegmentHeader {
         number: 0,
@@ -185,7 +185,7 @@ fn segment_page_info_simple() {
 /// seg.retain_bits = 1;
 /// ```
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_symbol_table() {
     let seg = SegmentHeader {
         number: 0,
@@ -220,7 +220,7 @@ fn segment_symbol_table() {
 /// segr.len = 500;
 /// ```
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_text_region_one_ref() {
     let seg = SegmentHeader {
         number: 2,
@@ -248,7 +248,7 @@ fn segment_text_region_one_ref() {
 
 /// テキストリージョン（2つの参照: symtab + extra_symtab）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_text_region_two_refs() {
     let seg = SegmentHeader {
         number: 3,
@@ -277,7 +277,7 @@ fn segment_text_region_two_refs() {
 
 /// end-of-page セグメント（data_length=0）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_end_of_page() {
     let seg = SegmentHeader {
         number: 4,
@@ -302,7 +302,7 @@ fn segment_end_of_page() {
 
 /// end-of-file セグメント（page=0）。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_end_of_file() {
     let seg = SegmentHeader {
         number: 5,
@@ -327,7 +327,7 @@ fn segment_end_of_file() {
 
 /// 大きなセグメント番号（> 256）で2バイトリファレンス。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_large_number_2byte_ref() {
     let seg = SegmentHeader {
         number: 300,
@@ -355,7 +355,7 @@ fn segment_large_number_2byte_ref() {
 
 /// 4バイトページアソシエーション。
 #[test]
-#[ignore = "not yet implemented"]
+
 fn segment_4byte_page() {
     let seg = SegmentHeader {
         number: 0,
