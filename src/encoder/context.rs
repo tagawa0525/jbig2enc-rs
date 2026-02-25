@@ -1,9 +1,11 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use leptonica::recog::JbComponent;
 use leptonica::recog::jbclass::{TEMPLATE_BORDER, correlation_init};
+use leptonica::region::{ConnectivityType, pix_count_components};
 use leptonica::{Pix, PixelDepth};
 
+use crate::comparator::are_equivalent;
 use crate::error::Jbig2Error;
 use crate::symbol::{SymbolInstance, TextRegionConfig, encode_symbol_table, encode_text_region};
 use crate::wire::{
@@ -478,4 +480,158 @@ impl Jbig2Context {
 
         Ok(output)
     }
+
+    /// シンボルクラスの統合を行う（ブルートフォース版）。
+    ///
+    /// C++版 `jbig2enc_auto_threshold()`（`jbig2enc.cc:357-376`）に対応。
+    /// `pages_complete()` 前に呼ぶことで、視覚的に等価なシンボルクラスを統合し
+    /// シンボル辞書のサイズを削減する。
+    ///
+    /// 全テンプレートペアを O(n²) で比較する。テンプレート数が少ない場合に適している。
+    pub fn auto_threshold(&mut self) {
+        let mut i = 0;
+        while i < self.classer.pixat.len() {
+            let mut j = i + 1;
+            while j < self.classer.pixat.len() {
+                let equivalent =
+                    are_equivalent(&self.classer.pixat[i], &self.classer.pixat[j]).unwrap_or(false);
+
+                if equivalent {
+                    unite_and_remove(
+                        &mut self.classer.pixat,
+                        &mut self.classer.naclass,
+                        &mut self.classer.nclass,
+                        i,
+                        j,
+                    );
+                    // j 位置に新しい要素が来ているのでインクリメントしない
+                } else {
+                    j += 1;
+                }
+            }
+            i += 1;
+        }
+    }
+
+    /// シンボルクラスの統合を行う（ハッシュ加速版）。
+    ///
+    /// C++版 `jbig2enc_auto_threshold_using_hash()`（`jbig2enc.cc:428-487`）に対応。
+    /// ハッシュ値でバケットに分けてからバケット内で比較することで、
+    /// `auto_threshold()` より高速に動作する。
+    ///
+    /// ハッシュ: `(holes + 10*h + 10000*w) % 10_000_000`
+    /// （holes = 4連結の連結成分数, h = 高さ, w = 幅）
+    pub fn auto_threshold_using_hash(&mut self) {
+        if self.classer.pixat.is_empty() {
+            return;
+        }
+
+        // Phase 1: ハッシュバケット構築
+        let mut buckets: HashMap<u32, Vec<usize>> = HashMap::new();
+        for (i, pix) in self.classer.pixat.iter().enumerate() {
+            let w = pix.width();
+            let h = pix.height();
+            let holes = pix_count_components(pix, ConnectivityType::FourWay).unwrap_or(0);
+            let hash = (holes + 10 * h + 10000 * w) % 10_000_000;
+            buckets.entry(hash).or_default().push(i);
+        }
+
+        // Phase 2: バケット内でペアワイズ比較し、統合対象を収集
+        let mut representant_map: Vec<(usize, Vec<usize>)> = Vec::new();
+        for bucket in buckets.values_mut() {
+            let mut i = 0;
+            while i < bucket.len() {
+                let mut to_unite = Vec::new();
+                let mut j = i + 1;
+                while j < bucket.len() {
+                    let first_idx = bucket[i];
+                    let second_idx = bucket[j];
+                    let equivalent = are_equivalent(
+                        &self.classer.pixat[first_idx],
+                        &self.classer.pixat[second_idx],
+                    )
+                    .unwrap_or(false);
+
+                    if equivalent {
+                        to_unite.push(second_idx);
+                        bucket.swap_remove(j);
+                        // j にはバケット末尾の要素が来るのでインクリメントしない
+                    } else {
+                        j += 1;
+                    }
+                }
+                if !to_unite.is_empty() {
+                    representant_map.push((bucket[i], to_unite));
+                }
+                i += 1;
+            }
+        }
+
+        // Phase 3: バッチリインデックス（naclass の参照先を統合先に変更）
+        for (representant, to_unite) in &representant_map {
+            let to_unite_set: HashSet<usize> = to_unite.iter().copied().collect();
+            for class_id in &mut self.classer.naclass {
+                if to_unite_set.contains(class_id) {
+                    *class_id = *representant;
+                }
+            }
+        }
+
+        // Phase 4: バッチ削除（高インデックスから順に swap_remove）
+        let mut to_remove: Vec<usize> = representant_map
+            .into_iter()
+            .flat_map(|(_, list)| list)
+            .collect();
+        to_remove.sort_unstable();
+        to_remove.dedup();
+
+        for &idx in to_remove.iter().rev() {
+            let last = self.classer.pixat.len() - 1;
+            if idx != last {
+                self.classer.pixat.swap(idx, last);
+                for class_id in &mut self.classer.naclass {
+                    if *class_id == last {
+                        *class_id = idx;
+                    }
+                }
+            }
+            self.classer.pixat.pop();
+            self.classer.nclass -= 1;
+        }
+    }
+}
+
+/// 2つのテンプレートを統合する（swap_remove パターン）。
+///
+/// `second` のテンプレートへの参照を `first` にリダイレクトし、
+/// `pixat` から `second` を削除する。
+///
+/// C++版 `unite_templates_with_indexes()`（`jbig2enc.cc:295-353`）に対応。
+fn unite_and_remove(
+    pixat: &mut Vec<Pix>,
+    naclass: &mut [usize],
+    nclass: &mut usize,
+    first: usize,
+    second: usize,
+) {
+    // naclass の参照を second → first に変更
+    for class_id in naclass.iter_mut() {
+        if *class_id == second {
+            *class_id = first;
+        }
+    }
+
+    // swap_remove パターンで pixat[second] を削除
+    let last = pixat.len() - 1;
+    if second != last {
+        pixat.swap(second, last);
+        // 最後尾から移動した要素の参照を更新
+        for class_id in naclass.iter_mut() {
+            if *class_id == last {
+                *class_id = second;
+            }
+        }
+    }
+    pixat.pop();
+    *nclass -= 1;
 }

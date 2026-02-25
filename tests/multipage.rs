@@ -52,7 +52,6 @@ fn page_with_mixed_symbols() -> leptonica::Pix {
 
 /// log2up のテーブルテスト。
 #[test]
-
 fn log2up_table() {
     use jbig2enc_rs::encoder::log2up;
     assert_eq!(log2up(0), 0);
@@ -75,7 +74,6 @@ fn log2up_table() {
 
 /// 有効なパラメータでコンテキストを生成できること。
 #[test]
-
 fn new_valid_params() {
     let ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1);
     assert!(ctx.is_ok());
@@ -83,7 +81,6 @@ fn new_valid_params() {
 
 /// thresh が範囲外（0.3）のときエラーになること。
 #[test]
-
 fn new_invalid_thresh() {
     let ctx = Jbig2Context::new(0.3, 0.5, 300, 300, true, -1);
     assert!(ctx.is_err());
@@ -91,7 +88,6 @@ fn new_invalid_thresh() {
 
 /// weight が範囲外（1.5）のときエラーになること。
 #[test]
-
 fn new_invalid_weight() {
     let ctx = Jbig2Context::new(0.85, 1.5, 300, 300, true, -1);
     assert!(ctx.is_err());
@@ -103,7 +99,6 @@ fn new_invalid_weight() {
 
 /// 単一ページの符号化が成功し、非空の出力を生成すること。
 #[test]
-
 fn single_page_produces_output() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -115,7 +110,6 @@ fn single_page_produces_output() {
 
 /// full_headers=true のとき出力がJBIG2マジックバイトで始まること。
 #[test]
-
 fn full_headers_starts_with_magic() {
     let magic: [u8; 8] = [0x97, 0x4a, 0x42, 0x32, 0x0d, 0x0a, 0x1a, 0x0a];
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
@@ -126,7 +120,6 @@ fn full_headers_starts_with_magic() {
 
 /// full_headers=false のとき出力がJBIG2マジックバイトで始まらないこと。
 #[test]
-
 fn pdf_mode_no_magic() {
     let magic: [u8; 8] = [0x97, 0x4a, 0x42, 0x32, 0x0d, 0x0a, 0x1a, 0x0a];
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, false, -1).unwrap();
@@ -137,7 +130,6 @@ fn pdf_mode_no_magic() {
 
 /// full_headers のとき FileHeader 内のページ数フィールドが正しいこと。
 #[test]
-
 fn page_count_in_header() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -155,7 +147,6 @@ fn page_count_in_header() {
 
 /// 複数ページの符号化が成功すること。
 #[test]
-
 fn multipage_produces_output() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -170,7 +161,6 @@ fn multipage_produces_output() {
 
 /// 異なるシンボルパターンを持つ3ページの符号化が成功すること。
 #[test]
-
 fn three_pages_mixed_symbols() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -190,7 +180,6 @@ fn three_pages_mixed_symbols() {
 
 /// produce_page で xres/yres を上書きすると出力が変わること。
 #[test]
-
 fn resolution_override_changes_output() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -214,7 +203,6 @@ fn resolution_override_changes_output() {
 /// full_headers=false のとき全ページが page=1 で符号化されること。
 /// full_headers=true のとき各ページが異なる page 値で符号化されること。
 #[test]
-
 fn pdf_mode_vs_full_headers_page_numbering() {
     // PDF mode
     let mut ctx_pdf = Jbig2Context::new(0.85, 0.5, 300, 300, false, -1).unwrap();
@@ -243,7 +231,6 @@ fn pdf_mode_vs_full_headers_page_numbering() {
 
 /// pages_complete 前に produce_page を呼ぶとエラーになること。
 #[test]
-
 fn produce_page_before_complete_fails() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
@@ -252,7 +239,6 @@ fn produce_page_before_complete_fails() {
 
 /// 存在しないページ番号で produce_page を呼ぶとエラーになること。
 #[test]
-
 fn produce_page_invalid_page_no() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.add_page(&page_with_a_pattern()).unwrap();
