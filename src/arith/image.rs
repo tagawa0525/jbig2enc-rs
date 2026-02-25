@@ -196,7 +196,7 @@ impl ArithEncoder {
                 0
             };
             let mut w3: u32 = if temply >= -1 && temply + 1 < ty as i32 {
-                templ[(temply as usize + 1) * templwords_per_row]
+                templ[(temply + 1) as usize * templwords_per_row]
             } else {
                 0
             };
@@ -263,7 +263,7 @@ impl ArithEncoder {
                         0
                     };
                     w3 = if wordno < templwords_per_row && temply >= -1 && temply + 1 < ty as i32 {
-                        templ[(temply as usize + 1) * templwords_per_row + wordno]
+                        templ[(temply + 1) as usize * templwords_per_row + wordno]
                     } else {
                         0
                     };
