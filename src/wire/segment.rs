@@ -66,15 +66,37 @@ impl SegmentHeader {
         buf.push(flags);
 
         // referred-to count byte: retain_bits(5) | segment_count(3)
-        let count = self.referred_to.len() as u8;
-        let referred_byte = (self.retain_bits & 0x1F) | ((count & 0x07) << 5);
+        let count = self.referred_to.len();
+        assert!(
+            count <= 7,
+            "SegmentHeader::to_bytes: referred_to.len() must be <= 7 for short-form encoding, got {count}"
+        );
+        let count = count as u8;
+        let referred_byte = (self.retain_bits & 0x1F) | (count << 5);
         buf.push(referred_byte);
 
         // referred-to segment numbers
         for &seg_num in &self.referred_to {
+            assert!(
+                seg_num < self.number,
+                "invalid referred-to segment number {seg_num}: must be less than current segment number {}",
+                self.number
+            );
             match ref_size {
-                1 => buf.push(seg_num as u8),
-                2 => buf.extend_from_slice(&(seg_num as u16).to_be_bytes()),
+                1 => {
+                    assert!(
+                        seg_num <= u8::MAX as u32,
+                        "invalid referred-to segment number {seg_num}: does not fit in 1 byte"
+                    );
+                    buf.push(seg_num as u8);
+                }
+                2 => {
+                    assert!(
+                        seg_num <= u16::MAX as u32,
+                        "invalid referred-to segment number {seg_num}: does not fit in 2 bytes"
+                    );
+                    buf.extend_from_slice(&(seg_num as u16).to_be_bytes());
+                }
                 4 => buf.extend_from_slice(&seg_num.to_be_bytes()),
                 _ => unreachable!(),
             }
