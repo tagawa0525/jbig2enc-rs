@@ -1,6 +1,6 @@
 # Phase 4: シンボル辞書符号化
 
-**Status**: PLANNED
+**Status**: IMPLEMENTED
 
 ## 概要
 
