@@ -1,4 +1,5 @@
 mod cli;
+mod pipeline;
 
 use clap::Parser;
 
