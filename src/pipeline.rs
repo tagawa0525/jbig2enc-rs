@@ -1,8 +1,10 @@
-use leptonica::Pix;
+use leptonica::core::pix::RemoveColormapTarget;
+use leptonica::{Pix, PixelDepth};
 
 use crate::cli::CliError;
 
 /// 任意の Pix（グレー・カラー・1bpp）を1bpp二値画像に変換する。
+#[allow(dead_code)] // PR 3 の run() で使用予定
 ///
 /// C++ 版 `jbig2.cc` main() の画像前処理ループに対応。
 ///
@@ -18,13 +20,59 @@ pub fn binarize(
     up2: bool,
     up4: bool,
 ) -> Result<Pix, CliError> {
-    todo!()
+    // Step 1: カラーマップを除去（REMOVE_CMAP_BASED_ON_SRC 相当）
+    let pix_no_cmap = pix
+        .remove_colormap(RemoveColormapTarget::BasedOnSrc)
+        .map_err(|e| CliError::Image(format!("failed to remove colormap: {e}")))?;
+
+    // Step 2: 既に1bppならそのまま返す
+    if pix_no_cmap.depth() == PixelDepth::Bit1 {
+        return Ok(pix_no_cmap);
+    }
+
+    // Step 3: グレースケールに変換
+    let gray: Pix = if pix_no_cmap.depth().bits() > 8 {
+        // 32bpp（RGB等）→ グレー
+        pix_no_cmap
+            .convert_rgb_to_gray_fast()
+            .map_err(|e| CliError::Image(format!("failed to convert RGB to gray: {e}")))?
+    } else if matches!(pix_no_cmap.depth(), PixelDepth::Bit4 | PixelDepth::Bit8) {
+        // 4/8bpp → そのまま使用
+        pix_no_cmap
+    } else {
+        return Err(CliError::Image(format!(
+            "unsupported input image depth: {}",
+            pix_no_cmap.depth().bits()
+        )));
+    };
+
+    // Step 4: 適応的 or グローバル前処理
+    let adapt: Pix = if !global {
+        // 適応的: 背景ノーマライゼーション
+        leptonica::filter::adaptmap::clean_background_to_white(&gray, None, None)
+            .map_err(|e| CliError::Image(format!("failed to clean background: {e}")))?
+    } else {
+        // グローバル: 前処理なし
+        gray
+    };
+
+    // Step 5: アップサンプリング or 閾値処理
+    if up2 {
+        leptonica::transform::scale_gray_2x_li_thresh(&adapt, bw_threshold as i32)
+            .map_err(|e| CliError::Image(format!("failed to upsample 2x: {e}")))
+    } else if up4 {
+        leptonica::transform::scale_gray_4x_li_thresh(&adapt, bw_threshold as i32)
+            .map_err(|e| CliError::Image(format!("failed to upsample 4x: {e}")))
+    } else {
+        leptonica::color::threshold::threshold_to_binary(&adapt, bw_threshold)
+            .map_err(|e| CliError::Image(format!("failed to threshold: {e}")))
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use leptonica::{PixMut, PixelDepth};
+    use leptonica::PixMut;
 
     fn white_1bpp(w: u32, h: u32) -> Pix {
         PixMut::new(w, h, PixelDepth::Bit1).unwrap().into()
@@ -49,7 +97,6 @@ mod tests {
     // --- 1bpp 画像はそのまま通過 ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_1bpp_returns_1bpp() {
         let pix = white_1bpp(32, 32);
         let result = binarize(pix, false, 200, false, false).unwrap();
@@ -57,7 +104,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_1bpp_preserves_dimensions() {
         let pix = white_1bpp(40, 20);
         let result = binarize(pix, false, 200, false, false).unwrap();
@@ -68,7 +114,6 @@ mod tests {
     // --- 8bpp → 1bpp 変換 ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_8bpp_returns_1bpp() {
         let pix = gray_8bpp(32, 32, 100);
         let result = binarize(pix, false, 200, false, false).unwrap();
@@ -76,7 +121,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_8bpp_global_returns_1bpp() {
         let pix = gray_8bpp(32, 32, 100);
         let result = binarize(pix, true, 128, false, false).unwrap();
@@ -86,7 +130,6 @@ mod tests {
     // --- 32bpp（RGB）→ 1bpp 変換 ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_32bpp_returns_1bpp() {
         let pix = rgb_32bpp(32, 32, 200, 200, 200);
         let result = binarize(pix, false, 200, false, false).unwrap();
@@ -94,7 +137,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_32bpp_global_returns_1bpp() {
         let pix = rgb_32bpp(32, 32, 200, 200, 200);
         let result = binarize(pix, true, 128, false, false).unwrap();
@@ -104,7 +146,6 @@ mod tests {
     // --- グローバル vs 適応的閾値 ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_adaptive_and_global_both_succeed() {
         let pix_adaptive = gray_8bpp(32, 32, 150);
         let pix_global = gray_8bpp(32, 32, 150);
@@ -122,7 +163,6 @@ mod tests {
     // --- 2x アップサンプリング ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_up2_doubles_dimensions() {
         let pix = gray_8bpp(20, 10, 150);
         let result = binarize(pix, true, 200, true, false).unwrap();
@@ -134,7 +174,6 @@ mod tests {
     // --- 4x アップサンプリング ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_up4_quadruples_dimensions() {
         let pix = gray_8bpp(10, 8, 150);
         let result = binarize(pix, true, 200, false, true).unwrap();
@@ -146,7 +185,6 @@ mod tests {
     // --- 非対応深さのエラー ---
 
     #[test]
-    #[ignore = "not yet implemented"]
     fn binarize_16bpp_unsupported() {
         let pm = PixMut::new(16, 16, PixelDepth::Bit16).unwrap();
         let pix: Pix = pm.into();

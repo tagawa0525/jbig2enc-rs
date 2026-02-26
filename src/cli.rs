@@ -13,6 +13,7 @@ pub enum CliError {
     /// 未実装機能（-S 等）
     NotImplemented(String),
     /// 画像処理エラー（leptonica エラーのラップ）
+    #[allow(dead_code)] // PR 3 の run() で使用予定
     Image(String),
 }
 
