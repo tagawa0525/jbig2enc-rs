@@ -7,8 +7,8 @@ use std::process;
 
 use clap::Parser;
 use jbig2enc_rs::encoder::{Jbig2Context, encode_generic};
-use leptonica::Pix;
 use leptonica::io::{ImageFormat, write_image};
+use leptonica::{Pix, PixelDepth};
 
 use cli::{Args, CliError};
 
@@ -57,15 +57,22 @@ fn run(args: &Args) -> Result<(), CliError> {
 
     // シンボルモード: コンテキストを初期化
     let mut ctx_opt: Option<Jbig2Context> = if args.symbol_mode {
-        Some(
-            Jbig2Context::new(args.threshold, args.weight, 0, 0, !args.pdf, -1)
-                .map_err(|e| CliError::Image(e.to_string()))?,
-        )
+        let mut ctx = Jbig2Context::new(args.threshold, args.weight, 0, 0, !args.pdf, -1)
+            .map_err(|e| CliError::Image(e.to_string()))?;
+        ctx.set_verbose(args.verbose);
+        Some(ctx)
     } else {
         None
     };
 
     let mut num_pages = 0usize;
+    let mut pageno = 0usize;
+    let img_ext = if args.jpeg_output { "jpg" } else { "png" };
+    let img_format = if args.jpeg_output {
+        ImageFormat::Jpeg
+    } else {
+        ImageFormat::Png
+    };
 
     for file_path in &args.files {
         let pages = load_pages(file_path)
@@ -91,6 +98,14 @@ fn run(args: &Args) -> Result<(), CliError> {
                 source
             };
 
+            // セグメンテーション用に元画像を保持（-S かつ 1bpp でない場合）
+            let need_segment = args.segment && source.depth() != PixelDepth::Bit1;
+            let source_for_segment = if need_segment {
+                Some(source.clone())
+            } else {
+                None
+            };
+
             // 二値化
             let pixt = pipeline::binarize(source, args.global, bw_threshold, args.up2, args.up4)?;
 
@@ -99,6 +114,34 @@ fn run(args: &Args) -> Result<(), CliError> {
                 write_image(&pixt, out_path, ImageFormat::Png)
                     .map_err(|e| CliError::Image(format!("failed to write '{out_path}': {e}")))?;
             }
+
+            // -S: テキスト/グラフィクスセグメンテーション
+            let pixt = if let Some(ref piximg) = source_for_segment {
+                let (text, graphics) = pipeline::segment_image(&pixt, piximg)?;
+
+                // グラフィクス画像を保存
+                if let Some(ref gfx) = graphics {
+                    let gfx_path = format!("{}.{pageno:04}.{img_ext}", args.basename);
+                    write_image(gfx, &gfx_path, img_format).map_err(|e| {
+                        CliError::Image(format!("failed to write '{gfx_path}': {e}"))
+                    })?;
+                } else if args.verbose {
+                    eprintln!("{file_path}: no graphics found in input image");
+                }
+
+                match text {
+                    Some(t) => t,
+                    None => {
+                        eprintln!("{file_path}: no text portion found in input image");
+                        pageno += 1;
+                        continue;
+                    }
+                }
+            } else {
+                pixt
+            };
+
+            pageno += 1;
 
             if !args.symbol_mode {
                 // Generic モード: 1 ページのみ処理して stdout に出力

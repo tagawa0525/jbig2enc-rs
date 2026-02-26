@@ -245,3 +245,58 @@ fn produce_page_invalid_page_no() {
     ctx.pages_complete().unwrap();
     assert!(ctx.produce_page(99, None, None).is_err());
 }
+
+// ---------------------------------------------------------------------------
+// verbose テスト
+// ---------------------------------------------------------------------------
+
+/// verbose モードで pages_complete を実行しても正常な出力が得られること。
+///
+/// C++版 `jbig2enc.cc:662-665` に対応する統計出力のテスト。
+/// verbose=true でも符号化結果はバイト一致する。
+#[test]
+fn verbose_pages_complete_produces_same_output() {
+    // verbose=false で符号化
+    let mut ctx1 = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
+    ctx1.add_page(&page_with_a_pattern()).unwrap();
+    let output1 = ctx1.pages_complete().unwrap();
+
+    // verbose=true で符号化
+    let mut ctx2 = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
+    ctx2.set_verbose(true);
+    ctx2.add_page(&page_with_a_pattern()).unwrap();
+    let output2 = ctx2.pages_complete().unwrap();
+
+    // verbose は stderr 出力のみ影響し、符号化結果は同一
+    assert_eq!(output1, output2);
+}
+
+/// verbose モードの pages_complete がフォーマット通りの統計を stderr に出力すること。
+///
+/// 期待フォーマット:
+/// "JBIG2 compression complete. pages:N symbols:M log2:L"
+#[test]
+fn verbose_output_format() {
+    let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
+    ctx.set_verbose(true);
+    ctx.add_page(&page_with_a_pattern()).unwrap();
+
+    let output = ctx.pages_complete().unwrap();
+    assert!(!output.is_empty());
+
+    // verbose 出力フォーマットの検証:
+    // pages_complete 後に compression_stats() で統計文字列を取得できる
+    let stats = ctx.compression_stats();
+    assert!(
+        stats.contains("pages:1"),
+        "stats should contain page count: {stats}"
+    );
+    assert!(
+        stats.contains("symbols:"),
+        "stats should contain symbol count: {stats}"
+    );
+    assert!(
+        stats.contains("log2:"),
+        "stats should contain log2: {stats}"
+    );
+}

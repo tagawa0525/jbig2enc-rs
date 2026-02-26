@@ -49,6 +49,7 @@ pub struct Jbig2Context {
     page_width: Vec<u32>,
     page_height: Vec<u32>,
     symmap: HashMap<usize, usize>,
+    verbose: bool,
     refinement: bool,
     #[allow(dead_code)]
     refine_level: i32,
@@ -94,10 +95,30 @@ impl Jbig2Context {
             page_width: Vec::new(),
             page_height: Vec::new(),
             symmap: HashMap::new(),
+            verbose: false,
             refinement: refine_level >= 0,
             refine_level,
             baseindexes: Vec::new(),
         })
+    }
+
+    /// verbose モードを設定する。
+    ///
+    /// 有効にすると `pages_complete()` で圧縮統計を stderr に出力する。
+    /// C++版の `-v` フラグに対応。
+    pub fn set_verbose(&mut self, verbose: bool) {
+        self.verbose = verbose;
+    }
+
+    /// 圧縮統計の文字列を返す。
+    ///
+    /// `pages_complete()` 後に呼び出すことで、ページ数・シンボル数・log2 を
+    /// C++版 `jbig2enc.cc:662-665` と同じフォーマットで取得できる。
+    pub fn compression_stats(&self) -> String {
+        let npages = self.classer.npages;
+        let nsymbols = self.classer.pixat.len();
+        let log2 = log2up(nsymbols);
+        format!("JBIG2 compression complete. pages:{npages} symbols:{nsymbols} log2:{log2}")
     }
 
     /// ページを追加し、シンボル抽出・分類を実行する。
@@ -139,6 +160,10 @@ impl Jbig2Context {
     ///
     /// C++版 `jbig2_pages_complete()`（`jbig2enc.cc:537-722`）に対応。
     pub fn pages_complete(&mut self) -> Result<Vec<u8>, Jbig2Error> {
+        if self.verbose {
+            eprintln!("{}", self.compression_stats());
+        }
+
         let single_page = self.classer.npages == 1;
         let num_symbols = self.classer.pixat.len();
 
