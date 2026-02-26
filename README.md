@@ -1,69 +1,108 @@
-# jbig2enc-rs
+# jbig2enc
 
 A Rust reimplementation of [jbig2enc](https://github.com/agl/jbig2enc), a JBIG2 encoder for bi-level (1 bpp) images.
 
-## About jbig2enc
+[JBIG2](https://www.itu.int/rec/T-REC-T.88/en) is a compression standard for bi-level images that achieves better compression ratios than G4 (CCITT Group 4) through symbol extraction and dictionary-based reuse. It is commonly used for embedding scanned document images into PDFs.
 
-[jbig2enc](https://github.com/agl/jbig2enc) is a C++ encoder for [JBIG2](https://www.itu.int/rec/T-REC-T.88/en), a bi-level image compression format that achieves better compression than G4 through symbol extraction and reuse. It is widely used for embedding scanned document images into PDFs.
+This crate provides both a library API and a command-line tool. It uses [leptonica](https://github.com/tagawa0525/leptonica-rs) as its image processing foundation.
 
-This project reimplements jbig2enc's design and algorithms in Rust, using [leptonica-rs](https://github.com/tagawa0525/leptonica-rs) as the image processing foundation. The original C++ source code serves as the primary reference, included as a git submodule under `reference/jbig2enc/`.
+## Installation
 
-## Porting Status
+### Library
 
-Work in progress. The encoder is being ported incrementally following the structure of the original C++ implementation.
-
-| Feature                       | Status      |
-| ----------------------------- | ----------- |
-| Generic region encoding       | Planned     |
-| Symbol extraction             | Planned     |
-| Symbol classification         | Planned     |
-| Text region coding            | Planned     |
-| Refinement coding             | Planned     |
-| Multipage / PDF fragment mode | Planned     |
-
-Details: `docs/plans/`
-
-## Crate Structure
-
-```text
-jbig2enc-rs/
-├── src/                   # Encoder implementation
-├── docs/plans/            # Implementation plans
-└── reference/
-    ├── jbig2enc/          # Original C++ jbig2enc (porting reference)
-    ├── leptonica/         # Original C Leptonica (API reference)
-    └── leptonica-rs/      # Rust Leptonica (image processing foundation)
+```toml
+[dependencies]
+jbig2enc = "0.1"
 ```
 
-## Build & Test
+To use only as a library without the CLI binary:
+
+```toml
+[dependencies]
+jbig2enc = { version = "0.1", default-features = false }
+```
+
+### CLI
 
 ```bash
-cargo check
-cargo test
-cargo clippy --all-targets -- -D warnings
-cargo fmt -- --check
+cargo install jbig2enc
 ```
 
-### Fetching References
+## Library Usage
+
+Single-page lossless encoding (generic region):
+
+```rust,no_run
+use jbig2enc::encoder::encode_generic;
+use leptonica::io::read_image;
+
+let pix = read_image("input.png").unwrap();
+let data = encode_generic(&pix, true, 300, 300, false).unwrap();
+std::fs::write("output.jbig2", &data).unwrap();
+```
+
+Multi-page symbol mode encoding:
+
+```rust,no_run
+use jbig2enc::encoder::Jbig2Context;
+use leptonica::io::read_image;
+
+let mut ctx = Jbig2Context::new(0.92, 0.5, 300, 300, true, -1).unwrap();
+let page = read_image("page1.png").unwrap();
+ctx.add_page(&page).unwrap();
+
+let symbol_table = ctx.pages_complete().unwrap();
+let page_data = ctx.produce_page(0, None, None).unwrap();
+```
+
+### Modules
+
+- `arith` -- QM arithmetic coder, the core entropy coding engine
+- `comparator` -- Symbol template equivalence detection
+- `encoder` -- Multi-page compression context and generic region encoding
+- `error` -- Error types
+- `symbol` -- Symbol dictionary and text region encoding
+- `wire` -- JBIG2 wire format structures
+
+## CLI Usage
 
 ```bash
-git submodule update --init --recursive
+# Single-page generic encoding (output to stdout)
+jbig2enc input.png > output.jbig2
+
+# Symbol mode with PDF-ready output
+jbig2enc -s -p input.png
+
+# Multi-page symbol mode
+jbig2enc -s -p page1.png page2.png page3.png
+
+# With duplicate line removal
+jbig2enc -d input.png > output.jbig2
+
+# Custom threshold and DPI
+jbig2enc -s -p -t 0.85 -D 300 input.png
 ```
 
-## Documentation
+Run `jbig2enc --help` for the full list of options.
 
-- `CLAUDE.md` — Development conventions and process rules
-- `docs/plans/` — Implementation plans for each feature
-- [leptonica-rs API compatibility notes](https://github.com/tagawa0525/leptonica-rs/blob/main/docs/porting/jbig2enc-api-compatibility.md) — leptonica-rs API compatibility notes (also available locally at `reference/leptonica-rs/docs/porting/jbig2enc-api-compatibility.md` after `git submodule update --init --recursive`)
+## Feature Flags
+
+| Feature | Default | Description |
+|---------|---------|-------------|
+| `cli` | Yes | Builds the `jbig2enc` command-line binary (depends on `clap`) |
+
+## Minimum Supported Rust Version
+
+Rust 2024 edition (1.85+).
 
 ## License
 
-This project is distributed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0), the same license as the original [jbig2enc](https://github.com/agl/jbig2enc).
+This project is distributed under the [Apache License 2.0](LICENSE), the same license as the original [jbig2enc](https://github.com/agl/jbig2enc).
+
+## Acknowledgments
+
+This project relies on the source code and design of the original C++ jbig2enc by Adam Langley. It also depends on [leptonica](https://github.com/tagawa0525/leptonica-rs) as its image processing foundation, which in turn is a reimplementation of [Leptonica](http://www.leptonica.org/) by Dan Bloomberg.
 
 ## How This Project Is Built
 
 The porting work is carried out primarily by AI coding agents, including [Claude Code](https://docs.anthropic.com/en/docs/claude-code). A human maintainer defines the overall architecture, process rules, and acceptance criteria, while the agents read the original C++ source, write Rust code, and run tests under those constraints. Every commit goes through CI and automated review before merging.
-
-## Acknowledgments
-
-This project relies on the source code and design of the original C++ jbig2enc by Adam Langley. It also depends on [leptonica-rs](https://github.com/tagawa0525/leptonica-rs) as its image processing foundation, which in turn is a reimplementation of [Leptonica](http://www.leptonica.org/) by Dan Bloomberg.
