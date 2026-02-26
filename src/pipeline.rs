@@ -20,6 +20,11 @@ pub fn binarize(
     up2: bool,
     up4: bool,
 ) -> Result<Pix, CliError> {
+    // 引数チェック: up2 と up4 は排他
+    if up2 && up4 {
+        return Err(CliError::InvalidArgs("cannot use both -2 and -4".into()));
+    }
+
     // Step 1: カラーマップを除去（REMOVE_CMAP_BASED_ON_SRC 相当）
     let pix_no_cmap = pix
         .remove_colormap(RemoveColormapTarget::BasedOnSrc)
@@ -190,6 +195,15 @@ mod tests {
         let pix: Pix = pm.into();
         let result = binarize(pix, false, 200, false, false);
         // 16bpp は非対応
+        assert!(result.is_err());
+    }
+
+    // --- up2/up4 排他チェック ---
+
+    #[test]
+    fn binarize_up2_and_up4_returns_error() {
+        let pix = gray_8bpp(16, 16, 100);
+        let result = binarize(pix, true, 200, true, true);
         assert!(result.is_err());
     }
 }
