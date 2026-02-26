@@ -14,6 +14,9 @@ pub enum CliError {
     NotImplemented(String),
     /// 画像処理エラー（leptonica エラーのラップ）
     Image(String),
+    /// I/O エラー
+    #[allow(dead_code)] // PR 3 の run() で使用予定
+    Io(std::io::Error),
 }
 
 impl fmt::Display for CliError {
@@ -22,6 +25,7 @@ impl fmt::Display for CliError {
             CliError::InvalidArgs(msg) => write!(f, "invalid arguments: {msg}"),
             CliError::NotImplemented(msg) => write!(f, "not implemented: {msg}"),
             CliError::Image(msg) => write!(f, "image error: {msg}"),
+            CliError::Io(e) => write!(f, "I/O error: {e}"),
         }
     }
 }
