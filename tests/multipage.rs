@@ -255,7 +255,6 @@ fn produce_page_invalid_page_no() {
 /// C++版 `jbig2enc.cc:662-665` に対応する統計出力のテスト。
 /// verbose=true でも符号化結果はバイト一致する。
 #[test]
-#[ignore = "not yet implemented"]
 fn verbose_pages_complete_produces_same_output() {
     // verbose=false で符号化
     let mut ctx1 = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
@@ -277,7 +276,6 @@ fn verbose_pages_complete_produces_same_output() {
 /// 期待フォーマット:
 /// "JBIG2 compression complete. pages:N symbols:M log2:L"
 #[test]
-#[ignore = "not yet implemented"]
 fn verbose_output_format() {
     let mut ctx = Jbig2Context::new(0.85, 0.5, 300, 300, true, -1).unwrap();
     ctx.set_verbose(true);

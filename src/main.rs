@@ -57,10 +57,10 @@ fn run(args: &Args) -> Result<(), CliError> {
 
     // シンボルモード: コンテキストを初期化
     let mut ctx_opt: Option<Jbig2Context> = if args.symbol_mode {
-        Some(
-            Jbig2Context::new(args.threshold, args.weight, 0, 0, !args.pdf, -1)
-                .map_err(|e| CliError::Image(e.to_string()))?,
-        )
+        let mut ctx = Jbig2Context::new(args.threshold, args.weight, 0, 0, !args.pdf, -1)
+            .map_err(|e| CliError::Image(e.to_string()))?;
+        ctx.set_verbose(args.verbose);
+        Some(ctx)
     } else {
         None
     };

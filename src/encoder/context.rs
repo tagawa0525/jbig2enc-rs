@@ -115,8 +115,10 @@ impl Jbig2Context {
     /// `pages_complete()` 後に呼び出すことで、ページ数・シンボル数・log2 を
     /// C++版 `jbig2enc.cc:662-665` と同じフォーマットで取得できる。
     pub fn compression_stats(&self) -> String {
-        // TODO: implement in GREEN phase
-        String::new()
+        let npages = self.classer.npages;
+        let nsymbols = self.classer.pixat.len();
+        let log2 = log2up(nsymbols);
+        format!("JBIG2 compression complete. pages:{npages} symbols:{nsymbols} log2:{log2}")
     }
 
     /// ページを追加し、シンボル抽出・分類を実行する。
@@ -158,6 +160,10 @@ impl Jbig2Context {
     ///
     /// C++版 `jbig2_pages_complete()`（`jbig2enc.cc:537-722`）に対応。
     pub fn pages_complete(&mut self) -> Result<Vec<u8>, Jbig2Error> {
+        if self.verbose {
+            eprintln!("{}", self.compression_stats());
+        }
+
         let single_page = self.classer.npages == 1;
         let num_symbols = self.classer.pixat.len();
 
