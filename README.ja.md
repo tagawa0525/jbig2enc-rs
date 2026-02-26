@@ -4,7 +4,7 @@
 
 [JBIG2](https://www.itu.int/rec/T-REC-T.88/en) はシンボル抽出と辞書ベースの再利用により、G4（CCITT Group 4）より高い圧縮率を実現する二値画像の圧縮規格です。スキャン文書の PDF 埋め込みに広く使用されています。
 
-本クレートはライブラリ API とコマンドラインツールの両方を提供します。画像処理基盤として [leptonica](https://github.com/tagawa0525/leptonica-rs) を使用しています。
+本クレートはライブラリ API とコマンドラインツールの両方を提供します。C/C++ ライブラリへの依存はありません。画像処理基盤の [leptonica](https://github.com/tagawa0525/leptonica-rs) も pure Rust で移植されているため、ツールチェイン全体が `cargo` だけでビルドできます。
 
 ## インストール
 

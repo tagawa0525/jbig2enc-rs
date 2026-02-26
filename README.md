@@ -4,7 +4,7 @@ A Rust reimplementation of [jbig2enc](https://github.com/agl/jbig2enc), a JBIG2 
 
 [JBIG2](https://www.itu.int/rec/T-REC-T.88/en) is a compression standard for bi-level images that achieves better compression ratios than G4 (CCITT Group 4) through symbol extraction and dictionary-based reuse. It is commonly used for embedding scanned document images into PDFs.
 
-This crate provides both a library API and a command-line tool. It uses [leptonica](https://github.com/tagawa0525/leptonica-rs) as its image processing foundation.
+This crate provides both a library API and a command-line tool. Written entirely in Rust with no C/C++ dependencies -- the image processing foundation [leptonica](https://github.com/tagawa0525/leptonica-rs) is also a pure Rust reimplementation, so the entire toolchain builds with `cargo` alone.
 
 ## Installation
 
