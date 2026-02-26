@@ -31,8 +31,8 @@ pub fn binarize(
     }
 
     // Step 3: グレースケールに変換
-    let gray: Pix = if pix_no_cmap.depth().bits() > 8 {
-        // 32bpp（RGB等）→ グレー
+    let gray: Pix = if pix_no_cmap.depth() == PixelDepth::Bit32 {
+        // 32bpp（RGB）→ グレー
         pix_no_cmap
             .convert_rgb_to_gray_fast()
             .map_err(|e| CliError::Image(format!("failed to convert RGB to gray: {e}")))?
