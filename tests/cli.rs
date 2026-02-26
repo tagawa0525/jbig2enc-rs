@@ -15,7 +15,7 @@ use leptonica::{Pix, PixMut, PixelDepth};
 // ---------------------------------------------------------------------------
 
 fn jbig2_bin() -> PathBuf {
-    PathBuf::from(env!("CARGO_BIN_EXE_jbig2enc-rs"))
+    PathBuf::from(env!("CARGO_BIN_EXE_jbig2enc"))
 }
 
 /// プロセス固有のテンポラリパスを生成する。

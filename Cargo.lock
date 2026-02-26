@@ -316,7 +316,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "92ecc6618181def0457392ccd0ee51198e065e016d1d527a7ac1b6dc7c1f09d2"
 
 [[package]]
-name = "jbig2enc-rs"
+name = "jbig2enc"
 version = "0.1.0"
 dependencies = [
  "clap",
@@ -346,9 +346,9 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 
 [[package]]
 name = "leptonica"
-version = "0.1.0"
+version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ec9c37e23aa13a35354ebd808b3f1ae91eab7ac994a2c42f99640aa6d69256a"
+checksum = "aa2d136a93bbf796fca2e809e774b4ad7120ff18943f27034b37cb5dd040f556"
 dependencies = [
  "half",
  "jpeg-decoder",

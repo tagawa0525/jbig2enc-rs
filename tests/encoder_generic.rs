@@ -1,5 +1,5 @@
-use jbig2enc_rs::encoder::encode_generic;
-use jbig2enc_rs::wire::{
+use jbig2enc::encoder::encode_generic;
+use jbig2enc::wire::{
     SEGMENT_END_OF_FILE, SEGMENT_END_OF_PAGE, SEGMENT_IMM_GENERIC_REGION, SEGMENT_PAGE_INFORMATION,
 };
 use leptonica::{Pix, PixMut, PixelDepth};

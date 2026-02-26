@@ -1,4 +1,4 @@
-use jbig2enc_rs::arith::ArithEncoder;
+use jbig2enc::arith::ArithEncoder;
 
 // ========================================================================
 // encode_bitimage テスト

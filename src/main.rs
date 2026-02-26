@@ -6,7 +6,7 @@ use std::io::Write;
 use std::process;
 
 use clap::Parser;
-use jbig2enc_rs::encoder::{Jbig2Context, encode_generic};
+use jbig2enc::encoder::{Jbig2Context, encode_generic};
 use leptonica::io::{ImageFormat, write_image};
 use leptonica::{Pix, PixelDepth};
 
