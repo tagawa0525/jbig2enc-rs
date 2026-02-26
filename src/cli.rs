@@ -14,6 +14,8 @@ pub enum CliError {
     NotImplemented(String),
     /// 画像処理エラー（leptonica エラーのラップ）
     Image(String),
+    /// I/O エラー
+    Io(std::io::Error),
 }
 
 impl fmt::Display for CliError {
@@ -22,6 +24,7 @@ impl fmt::Display for CliError {
             CliError::InvalidArgs(msg) => write!(f, "invalid arguments: {msg}"),
             CliError::NotImplemented(msg) => write!(f, "not implemented: {msg}"),
             CliError::Image(msg) => write!(f, "image error: {msg}"),
+            CliError::Io(e) => write!(f, "I/O error: {e}"),
         }
     }
 }
@@ -167,7 +170,6 @@ impl Args {
     /// `-T` で明示指定されていればその値、なければ:
     /// - `-G`（グローバル）モード: 128
     /// - デフォルト（適応的）モード: 200
-    #[allow(dead_code)] // PR 2 の pipeline で使用予定
     pub fn effective_bw_threshold(&self) -> u8 {
         self.bw_threshold
             .unwrap_or(if self.global { 128 } else { 200 })
