@@ -10,9 +10,10 @@ use crate::cli::CliError;
 ///
 /// 処理ステップ:
 /// 1. カラーマップ除去（BasedOnSrc: 画像内容に応じた最適な除去）
-/// 2. 深さに応じたグレースケール変換（32bpp → グレー / 4-8bpp → そのまま）
-/// 3. 適応的 or グローバル前処理（`clean_background_to_white` or スキップ）
-/// 4. アップサンプリング or 閾値処理（`-2`/`-4`/なし）
+/// 2. 既に 1bpp の場合はそのまま返す（パススルー）
+/// 3. 深さに応じたグレースケール変換（32bpp → グレー / 4-8bpp → そのまま）
+/// 4. 適応的 or グローバル前処理（`clean_background_to_white` or スキップ）
+/// 5. アップサンプリング or 閾値処理（`-2`/`-4`/なし）
 pub fn binarize(
     pix: Pix,
     global: bool,
