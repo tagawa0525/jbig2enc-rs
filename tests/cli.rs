@@ -1,3 +1,4 @@
+#![cfg(feature = "cli")]
 // CLI 統合テスト。
 //
 // `std::process::Command` でビルド済みバイナリを起動し、
