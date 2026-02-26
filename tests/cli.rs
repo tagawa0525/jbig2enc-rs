@@ -25,9 +25,18 @@ fn tmp_path(name: &str) -> PathBuf {
     p
 }
 
-/// 指定サイズの全白 1bpp 画像を PNG ファイルとして書き出す。
+/// 1bpp テスト用 PNG を書き出す。
+///
+/// 中央付近に黒いブロックを配置してシンボルモードのコンポーネント検出に対応する。
 fn write_test_png(path: &PathBuf) {
-    let pix: Pix = PixMut::new(32, 32, PixelDepth::Bit1).unwrap().into();
+    let mut pm = PixMut::new(64, 64, PixelDepth::Bit1).unwrap();
+    // 20..44 x 20..44 の領域を黒に塗る（シンボル検出用）
+    for y in 20u32..44 {
+        for x in 20u32..44 {
+            pm.set_pixel(x, y, 1).unwrap();
+        }
+    }
+    let pix: Pix = pm.into();
     write_image(&pix, path, ImageFormat::Png).unwrap();
 }
 
@@ -37,7 +46,6 @@ fn write_test_png(path: &PathBuf) {
 
 /// Generic モード（デフォルト）: stdout に JBIG2 ファイルヘッダが出力される。
 #[test]
-#[ignore = "not yet implemented"]
 fn generic_mode_outputs_jbig2_magic() {
     let img = tmp_path("generic.png");
     write_test_png(&img);
@@ -62,7 +70,6 @@ fn generic_mode_outputs_jbig2_magic() {
 
 /// Generic PDF モード: stdout に非空のデータが出力される（ファイルヘッダなし）。
 #[test]
-#[ignore = "not yet implemented"]
 fn generic_pdf_mode_outputs_nonempty() {
     let img = tmp_path("generic_pdf.png");
     write_test_png(&img);
@@ -89,7 +96,6 @@ fn generic_pdf_mode_outputs_nonempty() {
 
 /// Symbol スタンドアロンモード: stdout に JBIG2 ファイルヘッダが出力される。
 #[test]
-#[ignore = "not yet implemented"]
 fn symbol_mode_standalone_outputs_jbig2_magic() {
     let img = tmp_path("symbol_sa.png");
     write_test_png(&img);
@@ -113,7 +119,6 @@ fn symbol_mode_standalone_outputs_jbig2_magic() {
 
 /// Symbol スタンドアロンモード マルチページ: 複数ページ入力でも成功する。
 #[test]
-#[ignore = "not yet implemented"]
 fn symbol_mode_multipage_outputs_nonempty() {
     let img1 = tmp_path("mp1.png");
     let img2 = tmp_path("mp2.png");
@@ -144,7 +149,6 @@ fn symbol_mode_multipage_outputs_nonempty() {
 
 /// Symbol PDF モード: `.sym` と `.0000` ファイルが生成される。
 #[test]
-#[ignore = "not yet implemented"]
 fn symbol_pdf_mode_creates_output_files() {
     let img = tmp_path("pdf_mode.png");
     write_test_png(&img);
@@ -181,7 +185,6 @@ fn symbol_pdf_mode_creates_output_files() {
 
 /// `-a` フラグでの自動閾値処理が成功する。
 #[test]
-#[ignore = "not yet implemented"]
 fn auto_threshold_mode_succeeds() {
     let img = tmp_path("auto_thresh.png");
     write_test_png(&img);
@@ -205,7 +208,6 @@ fn auto_threshold_mode_succeeds() {
 
 /// `--no-hash` フラグ付き自動閾値処理が成功する。
 #[test]
-#[ignore = "not yet implemented"]
 fn auto_threshold_no_hash_succeeds() {
     let img = tmp_path("auto_no_hash.png");
     write_test_png(&img);

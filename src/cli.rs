@@ -15,7 +15,6 @@ pub enum CliError {
     /// 画像処理エラー（leptonica エラーのラップ）
     Image(String),
     /// I/O エラー
-    #[allow(dead_code)] // PR 3 の run() で使用予定
     Io(std::io::Error),
 }
 
@@ -171,7 +170,6 @@ impl Args {
     /// `-T` で明示指定されていればその値、なければ:
     /// - `-G`（グローバル）モード: 128
     /// - デフォルト（適応的）モード: 200
-    #[allow(dead_code)] // PR 2 の pipeline で使用予定
     pub fn effective_bw_threshold(&self) -> u8 {
         self.bw_threshold
             .unwrap_or(if self.global { 128 } else { 200 })
