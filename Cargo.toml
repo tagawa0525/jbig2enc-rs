@@ -2,6 +2,7 @@
 name = "jbig2enc"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.87"
 description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
 license = "Apache-2.0"
 repository = "https://github.com/tagawa0525/jbig2enc-rs"
@@ -13,6 +14,7 @@ exclude = [
     "docs/**",
     "CLAUDE.md",
     ".github/**",
+    ".gitmodules",
 ]
 
 [features]
@@ -21,7 +23,7 @@ cli = ["dep:clap"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"], optional = true }
-leptonica = "0.1.0"
+leptonica = "0.1"
 
 [[bin]]
 name = "jbig2enc"

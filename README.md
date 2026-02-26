@@ -93,7 +93,7 @@ Run `jbig2enc --help` for the full list of options.
 
 ## Minimum Supported Rust Version
 
-Rust 2024 edition (1.85+).
+Rust 2024 edition (1.87+).
 
 ## License
 

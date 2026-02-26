@@ -93,7 +93,7 @@ jbig2enc -s -p -t 0.85 -D 300 input.png
 
 ## 最低サポート Rust バージョン
 
-Rust 2024 edition（1.85 以上）。
+Rust 2024 edition（1.87 以上）。
 
 ## ライセンス
 
