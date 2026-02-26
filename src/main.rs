@@ -29,22 +29,21 @@ fn main() {
 /// TIFF マルチページの場合は全ページを展開する。
 /// TIFF 以外（または単一ページ TIFF）は 1 要素のベクタとして返す。
 fn load_pages(file_path: &str) -> Result<Vec<Pix>, CliError> {
-    use std::fs::File;
-    use std::io::BufReader;
+    use std::io::{BufReader, Cursor};
+
+    // ファイルを一度だけ読み込み、TIFF 検出と読み出しの両方で共有する
+    let data = fs::read(file_path).map_err(CliError::Io)?;
 
     // TIFF マルチページ検出: ページ数が取得できれば TIFF として処理する
-    let page_count = File::open(file_path).map_err(CliError::Io).and_then(|f| {
-        leptonica::io::tiff::tiff_page_count(BufReader::new(f))
-            .map_err(|e| CliError::Image(e.to_string()))
-    });
+    let page_count = leptonica::io::tiff::tiff_page_count(BufReader::new(Cursor::new(&data[..])))
+        .map_err(|e| CliError::Image(e.to_string()));
 
     match page_count {
         Ok(n) if n > 1 => {
-            let f = File::open(file_path).map_err(CliError::Io)?;
-            leptonica::io::tiff::read_tiff_multipage(BufReader::new(f))
+            leptonica::io::tiff::read_tiff_multipage(BufReader::new(Cursor::new(&data[..])))
                 .map_err(|e| CliError::Image(e.to_string()))
         }
-        _ => leptonica::io::read_image(file_path)
+        _ => leptonica::io::read_image_mem(&data)
             .map(|p| vec![p])
             .map_err(|e| CliError::Image(e.to_string())),
     }
