@@ -12,6 +12,8 @@ pub enum CliError {
     InvalidArgs(String),
     /// 未実装機能（-S 等）
     NotImplemented(String),
+    /// 画像処理エラー（leptonica エラーのラップ）
+    Image(String),
 }
 
 impl fmt::Display for CliError {
@@ -19,6 +21,7 @@ impl fmt::Display for CliError {
         match self {
             CliError::InvalidArgs(msg) => write!(f, "invalid arguments: {msg}"),
             CliError::NotImplemented(msg) => write!(f, "not implemented: {msg}"),
+            CliError::Image(msg) => write!(f, "image error: {msg}"),
         }
     }
 }
