@@ -1,6 +1,6 @@
 # Phase 8: CLI ツール
 
-**Status**: IN_PROGRESS
+**Status**: IMPLEMENTED
 
 ## Context
 
