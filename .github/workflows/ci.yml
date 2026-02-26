@@ -33,9 +33,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { toolchain: "1.87", os: ubuntu }
-          - { toolchain: "1.87", os: macos }
-          - { toolchain: "1.87", os: windows }
+          - { toolchain: "1.88", os: ubuntu }
+          - { toolchain: "1.88", os: macos }
+          - { toolchain: "1.88", os: windows }
           - { toolchain: stable, os: ubuntu }
           - { toolchain: nightly, os: ubuntu }
     steps:
