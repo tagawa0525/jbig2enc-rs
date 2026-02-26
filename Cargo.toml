@@ -2,7 +2,7 @@
 name = "jbig2enc"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.87"
+rust-version = "1.88"
 description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
 license = "Apache-2.0"
 repository = "https://github.com/tagawa0525/jbig2enc-rs"

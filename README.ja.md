@@ -1,5 +1,7 @@
 # jbig2enc
 
+[English version](README.md)
+
 [jbig2enc](https://github.com/agl/jbig2enc)（C++製 JBIG2 エンコーダ）の Rust 移植です。1bpp（二値）画像を対象とします。
 
 [JBIG2](https://www.itu.int/rec/T-REC-T.88/en) はシンボル抽出と辞書ベースの再利用により、G4（CCITT Group 4）より高い圧縮率を実現する二値画像の圧縮規格です。スキャン文書の PDF 埋め込みに広く使用されています。
