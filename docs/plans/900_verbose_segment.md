@@ -1,6 +1,6 @@
 # Phase 9: Verbose統計出力 & Text/Graphicsセグメンテーション
 
-Status: IN_PROGRESS
+Status: IMPLEMENTED
 
 ## Context
 
