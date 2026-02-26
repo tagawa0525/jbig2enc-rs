@@ -12,13 +12,13 @@ jobs:
     name: Verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
           fetch-depth: 0
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7  # stable
         with:
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5  # v2
 
       - name: Check formatting
         run: cargo fmt --all -- --check
@@ -29,7 +29,11 @@ jobs:
 
       - name: Verify tag is on main
         run: |
-          git branch --contains "${{ github.ref_name }}" | grep -qw main
+          tag_commit="$(git rev-list -n1 "${{ github.ref_name }}")"
+          if ! git merge-base --is-ancestor "$tag_commit" origin/main; then
+            echo "::error::Tag ${{ github.ref_name }} is not on origin/main"
+            exit 1
+          fi
 
       - name: Verify tag matches Cargo.toml version
         run: |
@@ -45,9 +49,9 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: dtolnay/rust-toolchain@631a55b12751854ce901bb631d5902ceb48146f7  # stable
+      - uses: Swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5  # v2
       - name: Publish
         run: cargo publish
         env:
@@ -60,7 +64,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: softprops/action-gh-release@v2
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b  # v2
         with:
           generate_release_notes: true
