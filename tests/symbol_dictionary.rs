@@ -1,4 +1,4 @@
-use jbig2enc_rs::symbol::encode_symbol_table;
+use jbig2enc::symbol::encode_symbol_table;
 use leptonica::{Pix, PixMut, PixelDepth};
 
 // ---------------------------------------------------------------------------

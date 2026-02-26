@@ -1,4 +1,4 @@
-use jbig2enc_rs::encoder::Jbig2Context;
+use jbig2enc::encoder::Jbig2Context;
 use leptonica::{PixMut, PixelDepth};
 
 // ---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ fn page_with_mixed_symbols() -> leptonica::Pix {
 /// log2up のテーブルテスト。
 #[test]
 fn log2up_table() {
-    use jbig2enc_rs::encoder::log2up;
+    use jbig2enc::encoder::log2up;
     assert_eq!(log2up(0), 0);
     assert_eq!(log2up(1), 0);
     assert_eq!(log2up(2), 1);

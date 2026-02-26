@@ -1,4 +1,4 @@
-use jbig2enc_rs::encoder::Jbig2Context;
+use jbig2enc::encoder::Jbig2Context;
 use leptonica::{PixMut, PixelDepth};
 
 // ---------------------------------------------------------------------------

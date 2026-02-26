@@ -1,4 +1,4 @@
-use jbig2enc_rs::arith::{ArithEncoder, IntProc};
+use jbig2enc::arith::{ArithEncoder, IntProc};
 
 // ========================================================================
 // encode_int テスト

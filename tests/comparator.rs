@@ -1,4 +1,4 @@
-use jbig2enc_rs::comparator::are_equivalent;
+use jbig2enc::comparator::are_equivalent;
 use leptonica::{Pix, PixMut, PixelDepth};
 
 // ---------------------------------------------------------------------------

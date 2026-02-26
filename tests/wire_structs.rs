@@ -1,4 +1,4 @@
-use jbig2enc_rs::wire::{
+use jbig2enc::wire::{
     FileHeader, GenericRegion, PageInfo, SymbolDict, TextRegion, TextRegionAtFlags,
     TextRegionSymInsts,
 };

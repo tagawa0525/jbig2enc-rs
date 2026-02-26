@@ -1,4 +1,4 @@
-use jbig2enc_rs::wire::SegmentHeader;
+use jbig2enc::wire::SegmentHeader;
 
 // ---------------------------------------------------------------------------
 // SegmentHeader サイズ計算

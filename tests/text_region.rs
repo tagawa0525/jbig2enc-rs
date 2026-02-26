@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use jbig2enc_rs::symbol::{SymbolInstance, TextRegionConfig, encode_text_region};
+use jbig2enc::symbol::{SymbolInstance, TextRegionConfig, encode_text_region};
 use leptonica::{Pix, PixMut, PixelDepth};
 
 // ---------------------------------------------------------------------------

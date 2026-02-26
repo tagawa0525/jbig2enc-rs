@@ -1,4 +1,4 @@
-use jbig2enc_rs::arith::{ArithEncoder, STATE_TABLE};
+use jbig2enc::arith::{ArithEncoder, STATE_TABLE};
 
 // ========================================================================
 // 状態テーブル検証
