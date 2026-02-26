@@ -10,8 +10,6 @@ use clap::Parser;
 pub enum CliError {
     /// 引数バリデーションエラー
     InvalidArgs(String),
-    /// 未実装機能（-S 等）
-    NotImplemented(String),
     /// 画像処理エラー（leptonica エラーのラップ）
     Image(String),
     /// I/O エラー
@@ -22,7 +20,6 @@ impl fmt::Display for CliError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             CliError::InvalidArgs(msg) => write!(f, "invalid arguments: {msg}"),
-            CliError::NotImplemented(msg) => write!(f, "not implemented: {msg}"),
             CliError::Image(msg) => write!(f, "image error: {msg}"),
             CliError::Io(e) => write!(f, "I/O error: {e}"),
         }
@@ -154,12 +151,6 @@ impl Args {
             return Err(CliError::InvalidArgs(format!(
                 "DPI must be between 1 and 9600, got {dpi}"
             )));
-        }
-
-        if self.segment {
-            return Err(CliError::NotImplemented(
-                "text/graphics segmentation (-S) is not yet implemented".into(),
-            ));
         }
 
         Ok(())
@@ -424,16 +415,15 @@ mod tests {
         assert!(matches!(err, CliError::InvalidArgs(_)));
     }
 
-    // --- -S 未実装 ---
+    // --- -S セグメンテーション（実装済み） ---
 
     #[test]
-    fn segment_flag_is_not_implemented() {
+    fn segment_flag_passes_validation() {
         let args = Args {
             segment: true,
             ..default_args()
         };
-        let err = args.validate().unwrap_err();
-        assert!(matches!(err, CliError::NotImplemented(_)));
+        assert!(args.validate().is_ok());
     }
 
     // --- clap パース統合テスト ---

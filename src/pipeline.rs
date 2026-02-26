@@ -1,9 +1,6 @@
 use leptonica::core::pix::RemoveColormapTarget;
-#[allow(unused_imports)] // used in segment_image (GREEN phase)
 use leptonica::morph::sequence::morph_sequence;
-#[allow(unused_imports)] // used in segment_image (GREEN phase)
 use leptonica::region::{ConnectivityType, seedfill_binary_restricted};
-#[allow(unused_imports)] // used in segment_image (GREEN phase)
 use leptonica::transform::scale::expand_replicate;
 use leptonica::{Pix, PixelDepth};
 
@@ -93,13 +90,81 @@ pub fn binarize(
 /// `(text, graphics)`:
 /// - `text: None` → テキスト領域が少なすぎる（< 100 pixels）ためスキップ
 /// - `graphics: None` → グラフィクス領域が少なすぎる（< 100 pixels）
-#[allow(dead_code)] // CLI 統合は GREEN phase で実施
 pub fn segment_image(pixb: &Pix, piximg: &Pix) -> Result<(Option<Pix>, Option<Pix>), CliError> {
-    // TODO: implement in GREEN phase
-    let _ = (pixb, piximg);
-    Err(CliError::NotImplemented(
-        "segment_image not yet implemented".into(),
-    ))
+    if pixb.depth() != PixelDepth::Bit1 {
+        return Err(CliError::InvalidArgs(format!(
+            "segment_image requires 1bpp input, got {}bpp",
+            pixb.depth().bits()
+        )));
+    }
+
+    // Step 1-2: 形態学処理でマスクとシードを生成（4x縮小空間）
+    // C++: pixMorphSequence(pixb, "r11", 0)
+    let pixmask4 = morph_sequence(pixb, "r11")
+        .map_err(|e| CliError::Image(format!("morph_sequence mask failed: {e}")))?;
+    // C++: pixMorphSequence(pixb, "r1143 + o4.4 + x4", 0)
+    let pixseed4 = morph_sequence(pixb, "r1143 + o4.4 + x4")
+        .map_err(|e| CliError::Image(format!("morph_sequence seed failed: {e}")))?;
+
+    // Step 3: シードフィル（8連結）
+    // C++: pixSeedfillBinary(NULL, pixseed4, pixmask4, 8)
+    let pixsf4 = seedfill_binary_restricted(&pixseed4, &pixmask4, ConnectivityType::EightWay, 0, 0)
+        .map_err(|e| CliError::Image(format!("seedfill failed: {e}")))?;
+
+    // Step 4: 膨張
+    // C++: pixMorphSequence(pixsf4, "d3.3", 0)
+    let pixd4 = morph_sequence(&pixsf4, "d3.3")
+        .map_err(|e| CliError::Image(format!("morph_sequence dilation failed: {e}")))?;
+
+    // Step 5: 元サイズに復元（4x拡大）
+    // C++: pixExpandBinaryPower2(pixd4, 4)
+    let pixd = expand_replicate(&pixd4, 4)
+        .map_err(|e| CliError::Image(format!("expand_replicate failed: {e}")))?;
+
+    // Step 6: テキスト = binary AND NOT graphics_mask
+    // C++: pixSubtract(pixb, pixb, pixd)
+    let text = pixb
+        .subtract(&pixd)
+        .map_err(|e| CliError::Image(format!("subtract failed: {e}")))?;
+
+    // Step 7: ピクセル数チェック
+    let graphics_count = pixd.count_pixels();
+    if graphics_count < 100 {
+        // グラフィクス領域が少なすぎる → テキストのみ
+        return Ok((Some(text), None));
+    }
+
+    let text_count = text.count_pixels();
+    let text_result = if text_count < 100 { None } else { Some(text) };
+
+    // Step 8: 元画像の深度に合わせてグラフィクスマスクを変換し、合成
+    let piximg1 = match piximg.depth() {
+        PixelDepth::Bit1 | PixelDepth::Bit8 | PixelDepth::Bit32 => piximg.clone(),
+        d if d.bits() > 8 => piximg
+            .convert_to_32()
+            .map_err(|e| CliError::Image(format!("convert_to_32 failed: {e}")))?,
+        _ => piximg
+            .convert_to_8()
+            .map_err(|e| CliError::Image(format!("convert_to_8 failed: {e}")))?,
+    };
+
+    // グラフィクスマスクを元画像と同じ深度に変換
+    let pixd1 = match piximg1.depth() {
+        PixelDepth::Bit32 => pixd
+            .convert_to_32()
+            .map_err(|e| CliError::Image(format!("convert_to_32 mask failed: {e}")))?,
+        PixelDepth::Bit8 => pixd
+            .convert_to_8()
+            .map_err(|e| CliError::Image(format!("convert_to_8 mask failed: {e}")))?,
+        _ => pixd,
+    };
+
+    // C++: pixRasteropFullImage(pixd1, piximg1, PIX_SRC | PIX_DST) → OR
+    let graphics = pixd1
+        .or(&piximg1)
+        .map_err(|e| CliError::Image(format!("rasterop OR failed: {e}")))?;
+
+    Ok((text_result, Some(graphics)))
 }
 
 #[cfg(test)]
@@ -242,7 +307,6 @@ mod tests {
     /// テキスト（小さな矩形パターン）のみの 1bpp 画像ではグラフィクス領域が
     /// 検出されず `graphics: None` となる。
     #[test]
-    #[ignore = "not yet implemented"]
     fn segment_text_only_returns_no_graphics() {
         // テキスト風の小さな矩形パターン（グラフィクス要素なし）
         let mut pm = PixMut::new(200, 100, PixelDepth::Bit1).unwrap();
@@ -276,7 +340,6 @@ mod tests {
     /// 大きなブロック（グラフィクス風）と小さな矩形（テキスト風）を含む
     /// 合成画像でセグメンテーションを行う。
     #[test]
-    #[ignore = "not yet implemented"]
     fn segment_mixed_returns_both() {
         let mut pm = PixMut::new(400, 200, PixelDepth::Bit1).unwrap();
         // 大きなブロック（グラフィクス風: 150x100）
@@ -308,7 +371,6 @@ mod tests {
 
     /// 1bpp 以外の入力画像はエラーになること。
     #[test]
-    #[ignore = "not yet implemented"]
     fn segment_non_binary_input_returns_error() {
         let pix = gray_8bpp(100, 100, 128);
         let piximg = pix.clone();
