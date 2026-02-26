@@ -2,7 +2,29 @@
 name = "jbig2enc-rs"
 version = "0.1.0"
 edition = "2024"
+description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
+license = "Apache-2.0"
+repository = "https://github.com/tagawa0525/jbig2enc-rs"
+readme = "README.md"
+keywords = ["jbig2", "compression", "image", "encoding", "pdf"]
+categories = ["compression", "encoding", "multimedia::images"]
+exclude = [
+    "reference/**",
+    "docs/**",
+    "tests/**",
+    "CLAUDE.md",
+    ".github/**",
+]
+
+[features]
+default = ["cli"]
+cli = ["dep:clap"]
 
 [dependencies]
-clap = { version = "4", features = ["derive"] }
+clap = { version = "4", features = ["derive"], optional = true }
 leptonica = "0.1.0"
+
+[[bin]]
+name = "jbig2enc"
+path = "src/main.rs"
+required-features = ["cli"]
