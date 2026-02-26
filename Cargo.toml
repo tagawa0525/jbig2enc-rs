@@ -1,5 +1,5 @@
 [package]
-name = "jbig2enc-rs"
+name = "jbig2enc"
 version = "0.1.0"
 edition = "2024"
 description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
