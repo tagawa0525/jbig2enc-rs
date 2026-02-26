@@ -94,7 +94,7 @@ fn run(args: &Args) -> Result<(), CliError> {
             // 二値化
             let pixt = pipeline::binarize(source, args.global, bw_threshold, args.up2, args.up4)?;
 
-            // -O: デバッグ用 PNG 出力
+            // -O: デバッグ用 PNG 出力（複数ページ処理時は最後のページで上書き、C++ 版と同動作）
             if let Some(ref out_path) = args.output_threshold {
                 write_image(&pixt, out_path, ImageFormat::Png)
                     .map_err(|e| CliError::Image(format!("failed to write '{out_path}': {e}")))?;
