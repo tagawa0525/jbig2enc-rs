@@ -1,4 +1,10 @@
 use leptonica::core::pix::RemoveColormapTarget;
+#[allow(unused_imports)] // used in segment_image (GREEN phase)
+use leptonica::morph::sequence::morph_sequence;
+#[allow(unused_imports)] // used in segment_image (GREEN phase)
+use leptonica::region::{ConnectivityType, seedfill_binary_restricted};
+#[allow(unused_imports)] // used in segment_image (GREEN phase)
+use leptonica::transform::scale::expand_replicate;
 use leptonica::{Pix, PixelDepth};
 
 use crate::cli::CliError;
@@ -73,6 +79,27 @@ pub fn binarize(
         leptonica::color::threshold::threshold_to_binary(&adapt, bw_threshold)
             .map_err(|e| CliError::Image(format!("failed to threshold: {e}")))
     }
+}
+
+/// テキスト/グラフィクスセグメンテーションを行い、テキスト画像とグラフィクス画像に分離する。
+///
+/// C++版 `segment_image()`（`jbig2.cc:141-213`）に対応。
+///
+/// 1bpp 二値画像（`pixb`）と元のカラー/グレー画像（`piximg`）を受け取り、
+/// 形態学的処理でグラフィクス領域を検出して分離する。
+///
+/// # Returns
+///
+/// `(text, graphics)`:
+/// - `text: None` → テキスト領域が少なすぎる（< 100 pixels）ためスキップ
+/// - `graphics: None` → グラフィクス領域が少なすぎる（< 100 pixels）
+#[allow(dead_code)] // CLI 統合は GREEN phase で実施
+pub fn segment_image(pixb: &Pix, piximg: &Pix) -> Result<(Option<Pix>, Option<Pix>), CliError> {
+    // TODO: implement in GREEN phase
+    let _ = (pixb, piximg);
+    Err(CliError::NotImplemented(
+        "segment_image not yet implemented".into(),
+    ))
 }
 
 #[cfg(test)]
@@ -205,6 +232,87 @@ mod tests {
     fn binarize_up2_and_up4_returns_error() {
         let pix = gray_8bpp(16, 16, 100);
         let result = binarize(pix, true, 200, true, true);
+        assert!(result.is_err());
+    }
+
+    // --- segment_image テスト ---
+
+    /// テキスト領域のみの画像に対し、グラフィクスが None で返ること。
+    ///
+    /// テキスト（小さな矩形パターン）のみの 1bpp 画像ではグラフィクス領域が
+    /// 検出されず `graphics: None` となる。
+    #[test]
+    #[ignore = "not yet implemented"]
+    fn segment_text_only_returns_no_graphics() {
+        // テキスト風の小さな矩形パターン（グラフィクス要素なし）
+        let mut pm = PixMut::new(200, 100, PixelDepth::Bit1).unwrap();
+        for &(x, y, w, h) in &[
+            (10u32, 10u32, 8u32, 12u32),
+            (30, 10, 8, 12),
+            (50, 10, 8, 12),
+        ] {
+            for dy in 0..h {
+                for dx in 0..w {
+                    pm.set_pixel(x + dx, y + dy, 1).unwrap();
+                }
+            }
+        }
+        let pixb: Pix = pm.into();
+        let piximg = pixb.clone();
+
+        let (text, graphics) = segment_image(&pixb, &piximg).unwrap();
+        // グラフィクス領域は検出されない
+        assert!(
+            graphics.is_none(),
+            "text-only image should have no graphics"
+        );
+        // テキスト領域は存在する
+        assert!(text.is_some(), "text-only image should have text");
+        assert_eq!(text.unwrap().depth(), PixelDepth::Bit1);
+    }
+
+    /// グラフィクス領域を含む画像から text と graphics の両方が得られること。
+    ///
+    /// 大きなブロック（グラフィクス風）と小さな矩形（テキスト風）を含む
+    /// 合成画像でセグメンテーションを行う。
+    #[test]
+    #[ignore = "not yet implemented"]
+    fn segment_mixed_returns_both() {
+        let mut pm = PixMut::new(400, 200, PixelDepth::Bit1).unwrap();
+        // 大きなブロック（グラフィクス風: 150x100）
+        for y in 20..120 {
+            for x in 200..350 {
+                pm.set_pixel(x, y, 1).unwrap();
+            }
+        }
+        // 小さな矩形（テキスト風）
+        for &(bx, by) in &[(10u32, 10u32), (30, 10), (50, 10), (10, 40), (30, 40)] {
+            for dy in 0..10 {
+                for dx in 0..6 {
+                    pm.set_pixel(bx + dx, by + dy, 1).unwrap();
+                }
+            }
+        }
+        let pixb: Pix = pm.into();
+        // 8bpp グレースケール版を元画像として用意
+        let piximg = pixb.convert_to_8().unwrap();
+
+        let (text, graphics) = segment_image(&pixb, &piximg).unwrap();
+        assert!(text.is_some(), "mixed image should have text");
+        assert!(graphics.is_some(), "mixed image should have graphics");
+        // テキスト画像は 1bpp
+        assert_eq!(text.unwrap().depth(), PixelDepth::Bit1);
+        // グラフィクス画像の深度は元画像と同じ
+        assert_eq!(graphics.unwrap().depth(), PixelDepth::Bit8);
+    }
+
+    /// 1bpp 以外の入力画像はエラーになること。
+    #[test]
+    #[ignore = "not yet implemented"]
+    fn segment_non_binary_input_returns_error() {
+        let pix = gray_8bpp(100, 100, 128);
+        let piximg = pix.clone();
+        let result = segment_image(&pix, &piximg);
         assert!(result.is_err());
     }
 }
