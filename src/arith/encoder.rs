@@ -142,7 +142,7 @@ impl ArithEncoder {
         OUTPUT_BUFFER_SIZE * self.output_chunks.len() + self.outbuf.len()
     }
 
-    /// 符号化済みデータをVec<u8>として返す。
+    /// 符号化済みデータを`Vec<u8>`として返す。
     pub fn to_vec(&self) -> Vec<u8> {
         let mut buf = Vec::with_capacity(self.data_size());
         for chunk in &self.output_chunks {
