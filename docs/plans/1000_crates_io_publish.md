@@ -1,6 +1,6 @@
 # Phase 10: crates.io公開準備
 
-Status: IN_PROGRESS
+Status: IMPLEMENTED
 
 ## Context
 
