@@ -229,3 +229,108 @@ fn auto_threshold_no_hash_succeeds() {
 
     let _ = fs::remove_file(&img);
 }
+
+// ---------------------------------------------------------------------------
+// -O（デバッグ PNG）
+// ---------------------------------------------------------------------------
+
+/// `-O` フラグでデバッグ PNG ファイルが出力される。
+#[test]
+fn output_threshold_writes_debug_png() {
+    let img = tmp_path("thresh_in.png");
+    let debug_png = tmp_path("thresh_debug.png");
+    write_test_png(&img);
+
+    let out = Command::new(jbig2_bin())
+        .arg("-s")
+        .arg("-a")
+        .arg("-O")
+        .arg(&debug_png)
+        .arg(&img)
+        .output()
+        .unwrap();
+
+    assert!(
+        out.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(
+        fs::metadata(&debug_png).is_ok(),
+        "debug PNG not found at {}",
+        debug_png.to_string_lossy()
+    );
+
+    let _ = fs::remove_file(&img);
+    let _ = fs::remove_file(&debug_png);
+}
+
+// ---------------------------------------------------------------------------
+// -D（DPI 強制）
+// ---------------------------------------------------------------------------
+
+/// `-D` フラグで DPI を指定しても処理が成功する。
+#[test]
+fn dpi_flag_succeeds_on_image_without_dpi() {
+    let img = tmp_path("dpi_in.png");
+    write_test_png(&img);
+
+    let basename = tmp_path("dpi_out").to_string_lossy().to_string();
+    let sym_path = format!("{basename}.sym");
+    let page_path = format!("{basename}.0000");
+
+    let out = Command::new(jbig2_bin())
+        .arg("-s")
+        .arg("-p")
+        .arg("-D")
+        .arg("300")
+        .arg("-b")
+        .arg(&basename)
+        .arg(&img)
+        .output()
+        .unwrap();
+
+    assert!(
+        out.status.success(),
+        "stderr: {}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    assert!(fs::metadata(&page_path).is_ok(), "{page_path} not found");
+
+    let _ = fs::remove_file(&img);
+    let _ = fs::remove_file(&sym_path);
+    let _ = fs::remove_file(&page_path);
+}
+
+// ---------------------------------------------------------------------------
+// エラーケース
+// ---------------------------------------------------------------------------
+
+/// 存在しない入力ファイルを指定した場合にエラー終了する。
+#[test]
+fn nonexistent_input_file_fails() {
+    let img = tmp_path("no_such_file.png");
+    // ファイルは作成しない
+
+    let out = Command::new(jbig2_bin()).arg(&img).output().unwrap();
+
+    assert!(
+        !out.status.success(),
+        "expected failure for nonexistent input"
+    );
+    assert!(!out.stderr.is_empty(), "expected error message on stderr");
+}
+
+/// 画像として不正なバイト列のファイルを指定した場合にエラー終了する。
+#[test]
+fn invalid_image_format_fails() {
+    let img = tmp_path("bad_image.dat");
+    fs::write(&img, b"this is not a valid image format").unwrap();
+
+    let out = Command::new(jbig2_bin()).arg(&img).output().unwrap();
+
+    assert!(!out.status.success(), "expected failure for invalid image");
+    assert!(!out.stderr.is_empty(), "expected error message on stderr");
+
+    let _ = fs::remove_file(&img);
+}
