@@ -75,10 +75,15 @@ fn run(args: &Args) -> Result<(), CliError> {
             // DPI 強制（画像に DPI 情報がない場合のみ）
             let source = if let Some(dpi) = args.dpi {
                 if source.xres() == 0 && source.yres() == 0 {
-                    // ロード直後は refcount=1 なのでゼロコピー変換できる
-                    let mut pm = source.try_into_mut().unwrap();
-                    pm.set_resolution(dpi as i32, dpi as i32);
-                    pm.into()
+                    // ロード直後は refcount=1 なのでゼロコピー変換できる。
+                    // 参照カウントが増えている場合は DPI 設定をスキップして続行する。
+                    match source.try_into_mut() {
+                        Ok(mut pm) => {
+                            pm.set_resolution(dpi as i32, dpi as i32);
+                            pm.into()
+                        }
+                        Err(source) => source,
+                    }
                 } else {
                     source
                 }
@@ -115,42 +120,42 @@ fn run(args: &Args) -> Result<(), CliError> {
         }
     }
 
-    let mut ctx = ctx_opt.expect("symbol_mode=true のときのみここに到達する");
-
-    // 自動閾値処理
-    if args.auto_thresh {
-        if !args.no_hash {
-            ctx.auto_threshold_using_hash();
-        } else {
-            ctx.auto_threshold();
+    if let Some(mut ctx) = ctx_opt {
+        // 自動閾値処理
+        if args.auto_thresh {
+            if !args.no_hash {
+                ctx.auto_threshold_using_hash();
+            } else {
+                ctx.auto_threshold();
+            }
         }
-    }
 
-    // シンボルテーブルを書き出す
-    let sym_data = ctx
-        .pages_complete()
-        .map_err(|e| CliError::Image(e.to_string()))?;
-    if args.pdf {
-        let sym_path = format!("{}.sym", args.basename);
-        fs::write(&sym_path, &sym_data).map_err(CliError::Io)?;
-    } else {
-        std::io::stdout()
-            .write_all(&sym_data)
-            .map_err(CliError::Io)?;
-    }
-
-    // 各ページを書き出す
-    for i in 0..num_pages {
-        let page_data = ctx
-            .produce_page(i, None, None)
+        // シンボルテーブルを書き出す
+        let sym_data = ctx
+            .pages_complete()
             .map_err(|e| CliError::Image(e.to_string()))?;
         if args.pdf {
-            let page_path = format!("{}.{i:04}", args.basename);
-            fs::write(&page_path, &page_data).map_err(CliError::Io)?;
+            let sym_path = format!("{}.sym", args.basename);
+            fs::write(&sym_path, &sym_data).map_err(CliError::Io)?;
         } else {
             std::io::stdout()
-                .write_all(&page_data)
+                .write_all(&sym_data)
                 .map_err(CliError::Io)?;
+        }
+
+        // 各ページを書き出す
+        for i in 0..num_pages {
+            let page_data = ctx
+                .produce_page(i, None, None)
+                .map_err(|e| CliError::Image(e.to_string()))?;
+            if args.pdf {
+                let page_path = format!("{}.{i:04}", args.basename);
+                fs::write(&page_path, &page_data).map_err(CliError::Io)?;
+            } else {
+                std::io::stdout()
+                    .write_all(&page_data)
+                    .map_err(CliError::Io)?;
+            }
         }
     }
 
