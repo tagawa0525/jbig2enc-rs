@@ -10,11 +10,9 @@ readme = "README.md"
 keywords = ["jbig2", "compression", "image", "encoding", "pdf"]
 categories = ["compression", "encoding", "multimedia::images"]
 exclude = [
-    "reference/**",
     "docs/**",
     "CLAUDE.md",
     ".github/**",
-    ".gitmodules",
 ]
 
 [features]
