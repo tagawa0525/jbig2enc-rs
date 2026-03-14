@@ -89,9 +89,9 @@ Run `jbig2enc --help` for the full list of options.
 
 ## Feature Flags
 
-| Feature | Default | Description |
-|---------|---------|-------------|
-| `cli` | Yes | Builds the `jbig2enc` command-line binary (depends on `clap`) |
+| Feature | Default | Description                                                   |
+| ------- | ------- | ------------------------------------------------------------- |
+| `cli`   | Yes     | Builds the `jbig2enc` command-line binary (depends on `clap`) |
 
 ## Minimum Supported Rust Version
 

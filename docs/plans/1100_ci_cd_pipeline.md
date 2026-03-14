@@ -7,12 +7,13 @@ Status: IMPLEMENTED
 本プロジェクトには `.github/` ディレクトリが存在せず、CI/CD が未構築。CLAUDE.md の PR ワークフローでは Copilot レビューや CI チェック通過が必須ゲートとして定義されているが、実行基盤がない状態。これを解消する。
 
 あわせて以下の雑務も処理する:
+
 - `docs/plans/majestic-mapping-cocke.md` の削除（`1000_crates_io_publish.md` と内容重複）
 - `README.md` / `README.ja.md` に日英相互リンクを追加
 
 ## ファイル構成
 
-```
+```text
 .github/workflows/
   ci.yml   # CI: lint + test
   cd.yml   # CD: crates.io publish + GitHub Release
@@ -34,11 +35,11 @@ Status: IMPLEMENTED
 
 ### test ジョブ (matrix)
 
-| toolchain   | OS                         |
-|-------------|----------------------------|
-| 1.88 (MSRV) | ubuntu, macos, windows     |
-| stable      | ubuntu                     |
-| nightly     | ubuntu                     |
+| toolchain   | OS                     |
+| ----------- | ---------------------- |
+| 1.88 (MSRV) | ubuntu, macos, windows |
+| stable      | ubuntu                 |
+| nightly     | ubuntu                 |
 
 - `cargo test`（default features = CLI 含む）
 - `cargo test --no-default-features`（ライブラリのみ）
@@ -84,14 +85,14 @@ Status: IMPLEMENTED
 
 ## 対象ファイル
 
-| ファイル                           | 操作                                    |
-|------------------------------------|-----------------------------------------|
-| `tests/cli.rs`                     | 編集（`#![cfg(feature = "cli")]` 追加） |
-| `.github/workflows/ci.yml`         | 新規作成                                |
-| `.github/workflows/cd.yml`         | 新規作成                                |
-| `README.md`                        | 編集（日本語版リンク追加）              |
-| `README.ja.md`                     | 編集（英語版リンク追加）                |
-| `docs/plans/majestic-mapping-cocke.md` | 削除                                |
+| ファイル                               | 操作                                    |
+| -------------------------------------- | --------------------------------------- |
+| `tests/cli.rs`                         | 編集（`#![cfg(feature = "cli")]` 追加） |
+| `.github/workflows/ci.yml`             | 新規作成                                |
+| `.github/workflows/cd.yml`             | 新規作成                                |
+| `README.md`                            | 編集（日本語版リンク追加）              |
+| `README.ja.md`                         | 編集（英語版リンク追加）                |
+| `docs/plans/majestic-mapping-cocke.md` | 削除                                    |
 
 ## コミット構成
 

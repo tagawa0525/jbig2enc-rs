@@ -10,19 +10,19 @@ C++版 `jbig2enc_textregion()`（`jbig2sym.cc:218-461`）のRust移植。
 
 ## C++版対応
 
-| C++関数/構造体 | Rust対応 |
-|---|---|
-| `jbig2enc_textregion()` | `encode_text_region()` |
-| `YSorter` | `sort_by_key(y)` |
-| `XSorter` | `sort_by_key(x)` within strip |
+| C++関数/構造体                       | Rust対応                                     |
+| ------------------------------------ | -------------------------------------------- |
+| `jbig2enc_textregion()`              | `encode_text_region()`                       |
+| `YSorter`                            | `sort_by_key(y)`                             |
+| `XSorter`                            | `sort_by_key(x)` within strip                |
 | `jbig2enc_int(ctx, JBIG2_IADT, ...)` | `ArithEncoder::encode_int(IntProc::Dt, ...)` |
 | `jbig2enc_int(ctx, JBIG2_IAFS, ...)` | `ArithEncoder::encode_int(IntProc::Fs, ...)` |
 | `jbig2enc_int(ctx, JBIG2_IADS, ...)` | `ArithEncoder::encode_int(IntProc::Ds, ...)` |
 | `jbig2enc_int(ctx, JBIG2_IAIT, ...)` | `ArithEncoder::encode_int(IntProc::It, ...)` |
-| `jbig2enc_iaid(ctx, symbits, ...)` | `ArithEncoder::encode_iaid(symbits, ...)` |
+| `jbig2enc_iaid(ctx, symbits, ...)`   | `ArithEncoder::encode_iaid(symbits, ...)`    |
 | `jbig2enc_int(ctx, JBIG2_IARI, ...)` | `ArithEncoder::encode_int(IntProc::Ri, ...)` |
-| `jbig2enc_oob(ctx, JBIG2_IADS)` | `ArithEncoder::encode_oob(IntProc::Ds)` |
-| `symmap` / `symmap2` | `HashMap<usize, usize>` |
+| `jbig2enc_oob(ctx, JBIG2_IADS)`      | `ArithEncoder::encode_oob(IntProc::Ds)`      |
+| `symmap` / `symmap2`                 | `HashMap<usize, usize>`                      |
 
 ## API設計
 

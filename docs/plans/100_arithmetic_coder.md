@@ -9,16 +9,16 @@ JBIG2算術符号化の基盤であり、他の全フェーズが依存する。
 
 ## C++対応
 
-| C++関数/構造体 | Rustモジュール | 説明 |
-|---|---|---|
-| `ctbl[]` (92エントリ) | `arith::state_table` | QMコーダ状態テーブル |
-| `jbig2enc_ctx` | `arith::encoder::ArithEncoder` | コーダ状態管理 |
-| `encode_bit` / `byteout` / `emit` / `encode_final` | `arith::encoder` | ビット符号化ステートマシン |
-| `jbig2enc_int` / `intencrange[]` | `arith::int_encode` | 整数符号化（13種） |
-| `jbig2enc_oob` | `arith::int_encode` | OOBセンチネル |
-| `jbig2enc_iaid` | `arith::iaid` | シンボルID符号化 |
-| `jbig2enc_bitimage` | `arith::image` | パックド1bppビットマップ符号化 |
-| `jbig2enc_refine` | `arith::image` | リファインメント符号化 |
+| C++関数/構造体                                     | Rustモジュール                 | 説明                           |
+| -------------------------------------------------- | ------------------------------ | ------------------------------ |
+| `ctbl[]` (92エントリ)                              | `arith::state_table`           | QMコーダ状態テーブル           |
+| `jbig2enc_ctx`                                     | `arith::encoder::ArithEncoder` | コーダ状態管理                 |
+| `encode_bit` / `byteout` / `emit` / `encode_final` | `arith::encoder`               | ビット符号化ステートマシン     |
+| `jbig2enc_int` / `intencrange[]`                   | `arith::int_encode`            | 整数符号化（13種）             |
+| `jbig2enc_oob`                                     | `arith::int_encode`            | OOBセンチネル                  |
+| `jbig2enc_iaid`                                    | `arith::iaid`                  | シンボルID符号化               |
+| `jbig2enc_bitimage`                                | `arith::image`                 | パックド1bppビットマップ符号化 |
+| `jbig2enc_refine`                                  | `arith::image`                 | リファインメント符号化         |
 
 ## 外部依存
 
@@ -26,7 +26,7 @@ JBIG2算術符号化の基盤であり、他の全フェーズが依存する。
 
 ## モジュール構成
 
-```
+```rust
 src/arith/
   mod.rs           -- pub use 再エクスポート
   state_table.rs   -- QMコーダ 92状態テーブル (StateEntry, STATE_TABLE)
@@ -39,12 +39,14 @@ src/arith/
 ## PR構成
 
 ### PR 1: 状態テーブル + ArithEncoder core
+
 - `StateEntry` 構造体 + `STATE_TABLE` (92エントリ)
 - `ArithEncoder::new()` / `reset()` / `flush()` / `to_vec()`
 - `encode_bit()` / `byteout()` / `emit()` / `encode_final()`
 - テスト: 状態テーブル検証、H.2テストベクタ
 
 ### PR 2: 整数符号化
+
 - `IntProc` enum (13種)
 - `IntEncRange` + レンジテーブル (13エントリ)
 - `encode_int()` / `encode_oob()`
@@ -52,6 +54,7 @@ src/arith/
 - テスト: 既知整数値の符号化結果比較
 
 ### PR 3: ビットマップ符号化
+
 - `encode_bitimage()` — TPGD対応パックド1bpp符号化
 - `encode_refine()` — リファインメント符号化
 - テスト: 既知ビットマップパターンの符号化結果比較

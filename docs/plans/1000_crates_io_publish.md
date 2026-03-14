@@ -8,11 +8,11 @@ Status: IMPLEMENTED
 
 ## 変更対象ファイル
 
-| ファイル | 変更内容 |
-|---------|---------|
-| `LICENSE` | Apache License 2.0 全文を新規作成 |
+| ファイル     | 変更内容                                      |
+| ------------ | --------------------------------------------- |
+| `LICENSE`    | Apache License 2.0 全文を新規作成             |
 | `Cargo.toml` | メタデータ追加、clap feature分離、exclude設定 |
-| `src/lib.rs` | クレートレベルドキュメント追加 |
+| `src/lib.rs` | クレートレベルドキュメント追加                |
 
 ## 1. LICENSEファイル作成
 
@@ -22,7 +22,7 @@ Status: IMPLEMENTED
 ## 2. Cargo.tomlメタデータ追加・clap feature分離
 
 - `description`, `license`, `repository`, `readme`, `keywords`, `categories` を追加
-- `exclude` で `reference/`（サブモジュール25MB+）や開発用ファイルを除外
+- `exclude` で開発用ファイルを除外
 - `clap` を `optional = true` にし `cli` feature の背後に配置
 - `[[bin]]` に `required-features = ["cli"]` を設定
 - `default = ["cli"]` で `cargo install` 時はバイナリが自動ビルドされる
@@ -30,6 +30,7 @@ Status: IMPLEMENTED
 ## 3. lib.rsクレートレベルドキュメント追加
 
 `src/lib.rs` の先頭に英語で `//!` ドキュメントを追加:
+
 - クレートの概要（JBIG2エンコーダのRust移植）
 - 主要モジュールの説明
 - 基本的な使い方

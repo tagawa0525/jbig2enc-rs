@@ -9,17 +9,17 @@ C++版 `jbig2_encode_generic()`（`jbig2enc.cc:898-1002`）のRust移植。
 
 ## C++版対応
 
-| C++関数/構造体 | Rust対応 |
-|---|---|
-| `jbig2_encode_generic()` | `encode_generic()` |
-| `jbig2enc_bitimage()` | `ArithEncoder::encode_bitimage()` |
-| `jbig2enc_final()` | `ArithEncoder::encode_final()` |
-| `jbig2enc_datasize()` / `jbig2enc_tobuffer()` | `ArithEncoder::to_vec()` |
-| `pixSetPadBits(bw, 0)` | `PixMut::set_pad_bits(0)` |
-| `struct jbig2_file_header` | `wire::FileHeader` |
-| `struct jbig2_page_info` | `wire::PageInfo` |
-| `struct jbig2_generic_region` | `wire::GenericRegion` |
-| `struct Segment` | `wire::SegmentHeader` |
+| C++関数/構造体                                | Rust対応                          |
+| --------------------------------------------- | --------------------------------- |
+| `jbig2_encode_generic()`                      | `encode_generic()`                |
+| `jbig2enc_bitimage()`                         | `ArithEncoder::encode_bitimage()` |
+| `jbig2enc_final()`                            | `ArithEncoder::encode_final()`    |
+| `jbig2enc_datasize()` / `jbig2enc_tobuffer()` | `ArithEncoder::to_vec()`          |
+| `pixSetPadBits(bw, 0)`                        | `PixMut::set_pad_bits(0)`         |
+| `struct jbig2_file_header`                    | `wire::FileHeader`                |
+| `struct jbig2_page_info`                      | `wire::PageInfo`                  |
+| `struct jbig2_generic_region`                 | `wire::GenericRegion`             |
+| `struct Segment`                              | `wire::SegmentHeader`             |
 
 ## API設計
 
@@ -43,7 +43,7 @@ pub fn encode_generic(
 
 ### full_headers=true の場合
 
-```
+```text
 [FileHeader]                      13 bytes
 [SegmentHeader #0: PageInfo]      11 bytes
 [PageInfo data]                   19 bytes
@@ -56,7 +56,7 @@ pub fn encode_generic(
 
 ### full_headers=false の場合
 
-```
+```text
 [SegmentHeader #0: PageInfo]      11 bytes
 [PageInfo data]                   19 bytes
 [SegmentHeader #1: GenericRegion] 11 bytes
@@ -67,6 +67,7 @@ pub fn encode_generic(
 ## GenericRegion固定パラメータ
 
 C++版と同一の値を使用:
+
 - `gbtemplate = 0`（テンプレート0: 4ピクセルAT）
 - `mmr = false`
 - `a1x=3, a1y=-1, a2x=-3, a2y=-1, a3x=2, a3y=-2, a4x=-2, a4y=-2`
