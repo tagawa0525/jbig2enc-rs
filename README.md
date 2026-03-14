@@ -1,5 +1,10 @@
 # jbig2enc
 
+[![CI](https://github.com/tagawa0525/jbig2enc-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/tagawa0525/jbig2enc-rs/actions/workflows/ci.yml)
+[![crates.io](https://img.shields.io/crates/v/jbig2enc.svg)](https://crates.io/crates/jbig2enc)
+[![docs.rs](https://docs.rs/jbig2enc/badge.svg)](https://docs.rs/jbig2enc)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 [日本語版はこちら](README.ja.md)
 
 A Rust reimplementation of [jbig2enc](https://github.com/agl/jbig2enc), a JBIG2 encoder for bi-level (1 bpp) images.
