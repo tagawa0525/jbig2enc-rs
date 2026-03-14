@@ -1,6 +1,6 @@
 [package]
 name = "jbig2enc"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.88"
 description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
