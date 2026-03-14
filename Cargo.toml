@@ -10,11 +10,9 @@ readme = "README.md"
 keywords = ["jbig2", "compression", "image", "encoding", "pdf"]
 categories = ["compression", "encoding", "multimedia::images"]
 exclude = [
-    "reference/**",
     "docs/**",
     "CLAUDE.md",
     ".github/**",
-    ".gitmodules",
 ]
 
 [features]
@@ -23,7 +21,7 @@ cli = ["dep:clap"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"], optional = true }
-leptonica = "0.1"
+leptonica = "0.3.0"
 
 [[bin]]
 name = "jbig2enc"

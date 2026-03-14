@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# jbig2enc-rs
+## jbig2enc-rs
 
 C++版 [jbig2enc](https://github.com/agl/jbig2enc) のRust移植。JBIG2はbi-level（1bpp）画像をG4より高い圧縮率で符号化するフォーマット。Rust edition 2024。
 
@@ -19,37 +19,33 @@ cargo fmt -- --check
 
 ## リファレンス
 
-C++版ソースとleptonica-rsをgit submoduleとして保持:
+移植元ソースは外部リポジトリを直接参照する（サブモジュールは使用しない）。必要に応じてローカルに手動cloneできる（`reference/` は `.gitignore` に含まれる）。
 
-```bash
-git submodule update --init --recursive
-```
-
-- `reference/jbig2enc/` — C++版jbig2enc（移植元）
-- `reference/leptonica/` — C版Leptonica（jbig2enc依存ライブラリ・API参照用）
-- `reference/leptonica-rs/` — Rust版Leptonica（画像処理基盤）
+- [agl/jbig2enc](https://github.com/agl/jbig2enc) — C++版jbig2enc（移植元）
+- [DanBloomberg/leptonica](https://github.com/DanBloomberg/leptonica) — C版Leptonica（jbig2enc依存ライブラリ・API参照用）
+- [tagawa0525/leptonica-rs](https://github.com/tagawa0525/leptonica-rs) — Rust版Leptonica（画像処理基盤）
 
 ### C++版の主要ソース
 
-| ファイル | 内容 |
-|---------|------|
-| `reference/jbig2enc/src/jbig2enc.h` | 公開API定義 |
-| `reference/jbig2enc/src/jbig2.cc` | CLIツール・テキストセグメンテーション |
-| `reference/jbig2enc/src/jbig2enc.cc` | エンコーダ本体（シンボル管理・ページ生成） |
-| `reference/jbig2enc/src/jbig2arith.cc` | 算術符号化（QMコーダ） |
-| `reference/jbig2enc/src/jbig2sym.cc` | シンボル処理・リファインメント符号化 |
-| `reference/jbig2enc/src/jbig2comparator.cc` | シンボル比較・分類 |
-| `reference/jbig2enc/src/jbig2structs.h` | JBIG2セグメント・ヘッダのデータ構造 |
+| ファイル                                                                                       | 内容                                       |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [`src/jbig2enc.h`](https://github.com/agl/jbig2enc/blob/master/src/jbig2enc.h)                 | 公開API定義                                |
+| [`src/jbig2.cc`](https://github.com/agl/jbig2enc/blob/master/src/jbig2.cc)                     | CLIツール・テキストセグメンテーション      |
+| [`src/jbig2enc.cc`](https://github.com/agl/jbig2enc/blob/master/src/jbig2enc.cc)               | エンコーダ本体（シンボル管理・ページ生成） |
+| [`src/jbig2arith.cc`](https://github.com/agl/jbig2enc/blob/master/src/jbig2arith.cc)           | 算術符号化（QMコーダ）                     |
+| [`src/jbig2sym.cc`](https://github.com/agl/jbig2enc/blob/master/src/jbig2sym.cc)               | シンボル処理・リファインメント符号化       |
+| [`src/jbig2comparator.cc`](https://github.com/agl/jbig2enc/blob/master/src/jbig2comparator.cc) | シンボル比較・分類                         |
+| [`src/jbig2structs.h`](https://github.com/agl/jbig2enc/blob/master/src/jbig2structs.h)         | JBIG2セグメント・ヘッダのデータ構造        |
 
 ### JBIG2仕様書
 
-`reference/jbig2enc/doc/fcd14492.pdf`
+[`doc/fcd14492.pdf`](https://github.com/agl/jbig2enc/blob/master/doc/fcd14492.pdf)
 
 ## アーキテクチャ
 
 ### C++版jbig2encの処理フロー
 
-```
+```text
 入力画像(1bpp) → テキストセグメンテーション → シンボル抽出・分類(JbClasser)
     → シンボルテーブル符号化(jbig2_pages_complete)
     → ページ別符号化(jbig2_produce_page) → JBIG2出力 or PDF埋め込み断片
@@ -66,9 +62,10 @@ git submodule update --init --recursive
 
 ### leptonica-rs API互換性
 
-`reference/leptonica-rs/docs/porting/jbig2enc-api-compatibility.md` にC++版が使うleptonica関数とleptonica-rs APIの差異を記載。移植前に確認すること。
+[`docs/porting/jbig2enc-api-compatibility.md`](https://github.com/tagawa0525/leptonica-rs/blob/main/docs/porting/jbig2enc-api-compatibility.md) にC++版が使うleptonica関数とleptonica-rs APIの差異を記載。移植前に確認すること。
 
 HIGH差異（移植ブロッカー）:
+
 1. `morph_sequence`の`r`（ランク縮小）・`x`（バイナリ拡張）演算子が未実装
 2. `pixRasterop`のオフセット・領域指定付きラスタ演算が未実装
 

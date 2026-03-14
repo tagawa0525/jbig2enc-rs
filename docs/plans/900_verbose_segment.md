@@ -5,23 +5,25 @@ Status: IMPLEMENTED
 ## Context
 
 C++版jbig2encからの移植はPhase 1〜8で完了済み。残りの2つの未実装機能を補完する:
+
 1. `-v` (verbose) の圧縮統計出力
 2. `-S` (text/graphics segmentation) のセグメンテーション機能
 
 ## 変更対象ファイル
 
-| ファイル | 変更内容 |
-|---------|---------|
+| ファイル                 | 変更内容                                              |
+| ------------------------ | ----------------------------------------------------- |
 | `src/encoder/context.rs` | verbose フィールド追加、`pages_complete()` で統計出力 |
-| `src/pipeline.rs` | `segment_image()` 関数追加 |
-| `src/cli.rs` | `-S` の NotImplemented エラー除去 |
-| `src/main.rs` | verbose 設定、セグメンテーション呼び出し追加 |
+| `src/pipeline.rs`        | `segment_image()` 関数追加                            |
+| `src/cli.rs`             | `-S` の NotImplemented エラー除去                     |
+| `src/main.rs`            | verbose 設定、セグメンテーション呼び出し追加          |
 
 ## 1. Verbose 統計出力
 
 ### C++版の動作 (`jbig2enc.cc:662-665`)
 
 `pages_complete()` 内で以下を stderr に出力:
+
 - ページ数
 - シンボル数
 - log2(シンボル数)

@@ -9,19 +9,19 @@ C++版 `jbig2enc_symboltable()`（`jbig2sym.cc:91-180`）のRust移植。
 
 ## C++版対応
 
-| C++関数/構造体 | Rust対応 |
-|---|---|
-| `jbig2enc_symboltable()` | `encode_symbol_table()` |
-| `HeightSorter` / `WidthSorter` | `sort_by_key` クロージャ |
-| `jbig2enc_int(ctx, JBIG2_IADH, ...)` | `ArithEncoder::encode_int(IntProc::Dh, ...)` |
-| `jbig2enc_int(ctx, JBIG2_IADW, ...)` | `ArithEncoder::encode_int(IntProc::Dw, ...)` |
-| `jbig2enc_int(ctx, JBIG2_IAEX, ...)` | `ArithEncoder::encode_int(IntProc::Ex, ...)` |
-| `jbig2enc_oob(ctx, JBIG2_IADW)` | `ArithEncoder::encode_oob(IntProc::Dw)` |
-| `jbig2enc_bitimage()` | `ArithEncoder::encode_bitimage()` |
-| `jbig2enc_final()` | `ArithEncoder::encode_final()` |
-| `pixRemoveBorder()` | `Pix::remove_border()` |
-| `pixSetPadBits()` | `PixMut::set_pad_bits()` |
-| `kBorderSize = 6` | `border_size` パラメータ（leptonica-rs: `TEMPLATE_BORDER = 4`） |
+| C++関数/構造体                       | Rust対応                                                        |
+| ------------------------------------ | --------------------------------------------------------------- |
+| `jbig2enc_symboltable()`             | `encode_symbol_table()`                                         |
+| `HeightSorter` / `WidthSorter`       | `sort_by_key` クロージャ                                        |
+| `jbig2enc_int(ctx, JBIG2_IADH, ...)` | `ArithEncoder::encode_int(IntProc::Dh, ...)`                    |
+| `jbig2enc_int(ctx, JBIG2_IADW, ...)` | `ArithEncoder::encode_int(IntProc::Dw, ...)`                    |
+| `jbig2enc_int(ctx, JBIG2_IAEX, ...)` | `ArithEncoder::encode_int(IntProc::Ex, ...)`                    |
+| `jbig2enc_oob(ctx, JBIG2_IADW)`      | `ArithEncoder::encode_oob(IntProc::Dw)`                         |
+| `jbig2enc_bitimage()`                | `ArithEncoder::encode_bitimage()`                               |
+| `jbig2enc_final()`                   | `ArithEncoder::encode_final()`                                  |
+| `pixRemoveBorder()`                  | `Pix::remove_border()`                                          |
+| `pixSetPadBits()`                    | `PixMut::set_pad_bits()`                                        |
+| `kBorderSize = 6`                    | `border_size` パラメータ（leptonica-rs: `TEMPLATE_BORDER = 4`） |
 
 ## API設計
 
@@ -68,10 +68,12 @@ pub fn encode_symbol_table(
 C++版: `kBorderSize = 6`、leptonica-rs: `TEMPLATE_BORDER = 4`。
 
 `unborder=true` の場合:
+
 - シンボル寸法: `width - 2 * border_size`, `height - 2 * border_size`
 - `Pix::remove_border(border_size)` でボーダー除去してから符号化
 
 `unborder=false` の場合:
+
 - シンボルをそのまま符号化（`Pix::clone()` 相当）
 
 ## テスト方針

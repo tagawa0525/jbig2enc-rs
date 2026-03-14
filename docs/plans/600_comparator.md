@@ -9,16 +9,16 @@ C++版 `jbig2enc_are_equivalent()`（`jbig2comparator.cc:44-262`）のRust移植
 
 ## C++版対応
 
-| C++関数/構造体 | Rust対応 |
-|---|---|
-| `jbig2enc_are_equivalent(PIX*, PIX*)` | `are_equivalent(&Pix, &Pix)` |
-| `pixSizesEqual()` | `Pix::sizes_equal()` |
-| `pixGetWpl()` | `Pix::wpl()` |
-| `pixXor(NULL, pix1, pix2)` | `Pix::xor(&other)` |
-| `pixCountPixels(pix, &count, NULL)` | `Pix::count_pixels()` |
-| `pixThresholdPixelSum(pix, thresh, &above, NULL)` | `Pix::threshold_pixel_sum(thresh)` |
-| `pixGetPixel(pix, x, y, &val)` | `Pix::get_pixel(x, y)` |
-| `pixGetDimensions(pix, &w, &h, &d)` | `Pix::width()` / `height()` / `depth()` |
+| C++関数/構造体                                    | Rust対応                                |
+| ------------------------------------------------- | --------------------------------------- |
+| `jbig2enc_are_equivalent(PIX*, PIX*)`             | `are_equivalent(&Pix, &Pix)`            |
+| `pixSizesEqual()`                                 | `Pix::sizes_equal()`                    |
+| `pixGetWpl()`                                     | `Pix::wpl()`                            |
+| `pixXor(NULL, pix1, pix2)`                        | `Pix::xor(&other)`                      |
+| `pixCountPixels(pix, &count, NULL)`               | `Pix::count_pixels()`                   |
+| `pixThresholdPixelSum(pix, thresh, &above, NULL)` | `Pix::threshold_pixel_sum(thresh)`      |
+| `pixGetPixel(pix, x, y, &val)`                    | `Pix::get_pixel(x, y)`                  |
+| `pixGetDimensions(pix, &w, &h, &d)`               | `Pix::width()` / `height()` / `depth()` |
 
 ## API設計
 
@@ -61,6 +61,7 @@ pub fn are_equivalent(first: &Pix, second: &Pix) -> Result<bool, Jbig2Error>
 ### Stage 4: パターン検出（4種の棄却チェック）
 
 閾値計算:
+
 - `vertical_part = height / 9`, `horizontal_part = width / 9`
 - `a = max(h_part/2, w_part/2)`, `b = min(h_part/2, w_part/2)`
 - `point_thresh = a * b * PI`（楕円面積）
@@ -76,15 +77,15 @@ pub fn are_equivalent(first: &Pix, second: &Pix) -> Result<bool, Jbig2Error>
 
 ## leptonica-rs API
 
-| 関数 | シグネチャ | 備考 |
-|---|---|---|
-| `sizes_equal` | `fn sizes_equal(&self, other: &Pix) -> bool` | width/height/depth比較 |
-| `wpl` | `fn wpl(&self) -> u32` | |
-| `xor` | `fn xor(&self, other: &Pix) -> Result<Pix>` | 新規Pixを返す |
-| `count_pixels` | `fn count_pixels(&self) -> u64` | C++は`l_int32` |
-| `threshold_pixel_sum` | `fn threshold_pixel_sum(&self, thresh: u64) -> Result<bool>` | true=超過 |
-| `get_pixel` | `fn get_pixel(&self, x: u32, y: u32) -> Option<u32>` | |
-| `depth` | `fn depth(&self) -> PixelDepth` | enum |
+| 関数                  | シグネチャ                                                   | 備考                   |
+| --------------------- | ------------------------------------------------------------ | ---------------------- |
+| `sizes_equal`         | `fn sizes_equal(&self, other: &Pix) -> bool`                 | width/height/depth比較 |
+| `wpl`                 | `fn wpl(&self) -> u32`                                       |                        |
+| `xor`                 | `fn xor(&self, other: &Pix) -> Result<Pix>`                  | 新規Pixを返す          |
+| `count_pixels`        | `fn count_pixels(&self) -> u64`                              | C++は`l_int32`         |
+| `threshold_pixel_sum` | `fn threshold_pixel_sum(&self, thresh: u64) -> Result<bool>` | true=超過              |
+| `get_pixel`           | `fn get_pixel(&self, x: u32, y: u32) -> Option<u32>`         |                        |
+| `depth`               | `fn depth(&self) -> PixelDepth`                              | enum                   |
 
 ## テスト方針
 
