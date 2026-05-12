@@ -1,6 +1,6 @@
 [package]
 name = "jbig2enc"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 rust-version = "1.88"
 description = "Rust reimplementation of jbig2enc, a JBIG2 encoder for bi-level images"
@@ -21,7 +21,7 @@ cli = ["dep:clap"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"], optional = true }
-leptonica = "0.3.0"
+leptonica = "0.4"
 
 [[bin]]
 name = "jbig2enc"

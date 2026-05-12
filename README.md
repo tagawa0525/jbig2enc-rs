@@ -7,6 +7,11 @@
 
 [日本語版はこちら](README.ja.md)
 
+> [!IMPORTANT]
+> **Please use [`jbig2enc-rust`](https://crates.io/crates/jbig2enc-rust) instead.**
+>
+> A more mature and feature-complete Rust implementation of JBIG2 encoding is available at [LegeApp/jbig2enc-rust](https://github.com/LegeApp/jbig2enc-rust) ([crates.io](https://crates.io/crates/jbig2enc-rust)). New users are strongly recommended to use that crate. This project is kept available for reference only and is no longer actively recommended for production use.
+
 A Rust reimplementation of [jbig2enc](https://github.com/agl/jbig2enc), a JBIG2 encoder for bi-level (1 bpp) images.
 
 [JBIG2](https://www.itu.int/rec/T-REC-T.88/en) is a compression standard for bi-level images that achieves better compression ratios than G4 (CCITT Group 4) through symbol extraction and dictionary-based reuse. It is commonly used for embedding scanned document images into PDFs.
