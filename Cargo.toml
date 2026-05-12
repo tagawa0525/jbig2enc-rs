@@ -21,7 +21,7 @@ cli = ["dep:clap"]
 
 [dependencies]
 clap = { version = "4", features = ["derive"], optional = true }
-leptonica = "0.3.0"
+leptonica = "0.4"
 
 [[bin]]
 name = "jbig2enc"

@@ -213,7 +213,9 @@ mod tests {
 
     #[test]
     fn binarize_8bpp_returns_1bpp() {
-        let pix = gray_8bpp(32, 32, 100);
+        // 適応的二値化は背景正規化を使うため、leptonica のタイル(10x15)
+        // で 5x5 以上のマップを生成できるサイズが必要。
+        let pix = gray_8bpp(80, 80, 100);
         let result = binarize(pix, false, 200, false, false).unwrap();
         assert_eq!(result.depth(), PixelDepth::Bit1);
     }
@@ -229,7 +231,7 @@ mod tests {
 
     #[test]
     fn binarize_32bpp_returns_1bpp() {
-        let pix = rgb_32bpp(32, 32, 200, 200, 200);
+        let pix = rgb_32bpp(80, 80, 200, 200, 200);
         let result = binarize(pix, false, 200, false, false).unwrap();
         assert_eq!(result.depth(), PixelDepth::Bit1);
     }
@@ -245,8 +247,8 @@ mod tests {
 
     #[test]
     fn binarize_adaptive_and_global_both_succeed() {
-        let pix_adaptive = gray_8bpp(32, 32, 150);
-        let pix_global = gray_8bpp(32, 32, 150);
+        let pix_adaptive = gray_8bpp(80, 80, 150);
+        let pix_global = gray_8bpp(80, 80, 150);
 
         let adaptive = binarize(pix_adaptive, false, 200, false, false);
         let global = binarize(pix_global, true, 200, false, false);
