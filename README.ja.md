@@ -7,6 +7,11 @@
 
 [English version](README.md)
 
+> [!IMPORTANT]
+> **[`jbig2enc-rust`](https://crates.io/crates/jbig2enc-rust) の利用を推奨します。**
+>
+> より成熟しており機能的にも優れた Rust 製 JBIG2 エンコーダ実装が [LegeApp/jbig2enc-rust](https://github.com/LegeApp/jbig2enc-rust)（[crates.io](https://crates.io/crates/jbig2enc-rust)）にあります。新規利用の場合はそちらを強くお勧めします。本プロジェクトは参照用として残してありますが、実運用での利用は推奨しません。
+
 [jbig2enc](https://github.com/agl/jbig2enc)（C++製 JBIG2 エンコーダ）の Rust 移植です。1bpp（二値）画像を対象とします。
 
 [JBIG2](https://www.itu.int/rec/T-REC-T.88/en) はシンボル抽出と辞書ベースの再利用により、G4（CCITT Group 4）より高い圧縮率を実現する二値画像の圧縮規格です。スキャン文書の PDF 埋め込みに広く使用されています。
